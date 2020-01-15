@@ -39,6 +39,7 @@ static int nooutput_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
     else {
       HKG_ClU11_forwarded -= 1;
     }
+  }
   if (addr == 356) {
     if (HKG_VSM11_forwarded < 1) {
       HKG_OP_VSM11_live = 20;
