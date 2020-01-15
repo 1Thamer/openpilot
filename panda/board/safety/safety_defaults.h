@@ -1,8 +1,10 @@
 bool HKG_forwarding_enabled = 1;
 int HKG_LKAS_forwarded = 0;
 int HKG_ClU11_forwarded = 0;
+int HKG_VSM11_forwarded = 0;
 int HKG_OP_LKAS_live = 0;
 int HKG_OP_ClU11_live = 0;
+int HKG_OP_VSM11_live = 0;
 
 void default_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
   UNUSED(to_push);
@@ -37,6 +39,13 @@ static int nooutput_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
     else {
       HKG_ClU11_forwarded -= 1;
     }
+  if (addr == 356) {
+    if (HKG_VSM11_forwarded < 1) {
+      HKG_OP_VSM11_live = 20;
+    }
+    else {
+      HKG_OP_VSM11_live -= 1;
+    }
   }
   return 1;
 }
@@ -59,8 +68,15 @@ static int nooutput_tx_lin_hook(int lin_num, uint8_t *data, int len) {
   if (HKG_forwarding_enabled) {
     if (bus_num == 0) {
       if ((addr != 1265) || (HKG_OP_ClU11_live < 1)) {
-        if (addr == 1265) {HKG_ClU11_forwarded = 2;}
-        bus_fwd = 12;
+        if ((addr != 356) || (HKG_OP_VSM11_live < 1)) {
+          if (addr == 1265) {HKG_ClU11_forwarded = 2;}
+          if (addr == 356) {HKG_VSM11_forwarded = 2;}
+          bus_fwd = 12;
+        } else {
+          HKG_OP_VSM11_live -= 1;
+          HKG_VSM11_forwarded = 1;
+          bus_fwd = 2;
+        }
       } else {
         HKG_OP_ClU11_live -= 1;
         HKG_ClU11_forwarded = 1;
@@ -126,6 +142,14 @@ static int alloutput_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
     }
     else {
       HKG_ClU11_forwarded -= 1;
+    }
+  }
+  if (addr == 356) {
+    if (HKG_VSM11_forwarded < 1) {
+      HKG_OP_VSM11_live = 20;
+    }
+    else {
+      HKG_OP_VSM11_live -= 1;
     }
   }
   return 1;
