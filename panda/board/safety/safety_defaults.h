@@ -4,6 +4,17 @@ int HKG_MDPS12_checksum = -1;
 int HKG_MDPS12_cnt = 0;   
 int HKG_last_StrColT = 0;
 
+void can_send(CAN_FIFOMailBox_TypeDef *to_push, uint8_t bus_number);
+
+static void send_message(int msg_addr, int msg_len, uint64_t dat, int bus_num) {
+  CAN_FIFOMailBox_TypeDef to_send;
+  to_send.RIR = (msg_addr << 21) + 1;
+  to_send.RDTR = msg_len;
+  to_send.RDLR = dat & 0xFFFFFFFF;
+  to_send.RDHR = dat >> 32;
+  can_send(&to_send, bus_num);
+}
+
 void default_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
   int bus = GET_BUS(to_push);
   int addr = GET_ADDR(to_push);
@@ -39,6 +50,9 @@ void default_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     else {
       HKG_MDPS12_checksum = 1;
     }
+  }
+  if (HKG_MDPS12_cnt == 172 || HKG_MDPS12_cnt == 345) {
+    send_message(0x771, 8, 0x021003, 0)
   }
 }
 
