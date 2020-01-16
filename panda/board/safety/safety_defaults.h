@@ -59,7 +59,7 @@ void default_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     int trigger = GET_BYTE(to_push, 1) & 1;
     if (trigger != last_trigger && trigger) {
       send_message(0x771, 8, 0x042FBC1503, 0);
-    } else {
+    } else if (trigger != last_trigger) {
       send_message(0x771, 8, 0x042FBC15, 0);
     }
     last_trigger = trigger;
