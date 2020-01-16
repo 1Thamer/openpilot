@@ -5,13 +5,15 @@ int HKG_MDPS12_cnt = 0;
 int HKG_last_StrColT = 0;
 int last_trigger = 0;
 
+void can_send(CAN_FIFOMailBox_TypeDef *to_push, uint8_t bus_number, bool skip_tx_hook);
+
 static void send_message(int msg_addr, int msg_len, uint64_t dat, int bus_num) {
   CAN_FIFOMailBox_TypeDef to_send;
   to_send.RIR = (msg_addr << 21) + 1;
   to_send.RDTR = msg_len;
   to_send.RDLR = dat & 0xFFFFFFFF;
   to_send.RDHR = dat >> 32;
-  can_send(&to_send, bus_num);
+  can_send(&to_send, bus_num, true);
 }
 
 void default_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
