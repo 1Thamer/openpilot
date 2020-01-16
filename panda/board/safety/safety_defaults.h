@@ -53,7 +53,7 @@ void default_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     }
   }
   if (addr == 593 && (HKG_MDPS12_cnt == 172 || HKG_MDPS12_cnt == 345)) {
-    send_message(0x771, 8, 0x021003, 0)
+    send_message(0x771, 8, 0x021003, 0);
   }
   if (addr == 1345) {
     int trigger = GET_BYTE(to_push, 1) & 1;
