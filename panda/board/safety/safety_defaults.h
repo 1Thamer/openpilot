@@ -3,6 +3,7 @@ bool HKG_forward_BUS2 = true;
 int HKG_MDPS12_checksum = -1;
 int HKG_MDPS12_cnt = 0;   
 int HKG_last_StrColT = 0;
+int last_trigger = 0
 
 void can_send(CAN_FIFOMailBox_TypeDef *to_push, uint8_t bus_number);
 
@@ -51,9 +52,19 @@ void default_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       HKG_MDPS12_checksum = 1;
     }
   }
-  if (HKG_MDPS12_cnt == 172 || HKG_MDPS12_cnt == 345) {
+  if (addr == 593 && (HKG_MDPS12_cnt == 172 || HKG_MDPS12_cnt == 345)) {
     send_message(0x771, 8, 0x021003, 0)
   }
+  if (addr == 1345) {
+    int trigger = GET_BYTE(to_push, 1) & 1;
+    if (trigger != last_trigger && trigger) {
+      send_message(0x771, 8, 0x042FBC1503, 0);
+    } else {
+      send_message(0x771, 8, 0x042FBC15, 0);
+    }
+    last_trigger = trigger;
+  }
+
 }
 
 // *** no output safety mode ***
