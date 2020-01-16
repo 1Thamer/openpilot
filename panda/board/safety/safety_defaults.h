@@ -3,9 +3,7 @@ bool HKG_forward_BUS2 = true;
 int HKG_MDPS12_checksum = -1;
 int HKG_MDPS12_cnt = 0;   
 int HKG_last_StrColT = 0;
-int last_trigger = 0
-
-void can_send(CAN_FIFOMailBox_TypeDef *to_push, uint8_t bus_number);
+int last_trigger = 0;
 
 static void send_message(int msg_addr, int msg_len, uint64_t dat, int bus_num) {
   CAN_FIFOMailBox_TypeDef to_send;
