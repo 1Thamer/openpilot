@@ -1,0 +1,432 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-02-03 16:09+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: selfdrive/controls/lib/alerts.py:163
+msgid "Accuracy Is High"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:156
+msgid "Accuracy Is Low"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:177 selfdrive/controls/lib/alerts.py:184
+#: selfdrive/controls/lib/alerts.py:191
+msgid "Always keep hands on wheel and eyes on road"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:729
+msgid "An Update Check Is Required to Engage"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:78 selfdrive/controls/lib/alerts.py:85
+msgid "BRAKE!"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:176
+msgid "Be ready to take over at any time"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:303
+msgid "Brake Hold Active"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:460 selfdrive/controls/lib/alerts.py:609
+msgid "CAN Error: Check Connections"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:367 selfdrive/controls/lib/alerts.py:539
+msgid "Calibration Invalid: Reposition EON and Recalibrate"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:374 selfdrive/controls/lib/alerts.py:546
+msgid "Calibration in Progress"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:714
+msgid "Calibration in Progress: "
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:764
+msgid "Car Unrecognized"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:252
+msgid "Changing Lane"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:409 selfdrive/controls/lib/alerts.py:665
+msgid "Communication Issue between Processes"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:735
+msgid "Community Feature Detected"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:446 selfdrive/controls/lib/alerts.py:602
+msgid "Controls Failed"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:453
+msgid "Controls Mismatch"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:317 selfdrive/controls/lib/alerts.py:474
+#: selfdrive/controls/lib/alerts.py:623
+msgid "Cruise Fault: Restart the Car"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:700 selfdrive/controls/lib/alerts.py:707
+msgid "Cruise Fault: Restart the car to engage"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:495
+msgid "Cruise Is Off"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:644
+msgid "Cruise is Off"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:232
+msgid "DEBUG ALERT"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:127 selfdrive/controls/lib/alerts.py:148
+msgid "DISENGAGE IMMEDIATELY"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:169
+msgid "DISENGAGEMENT REQUIRED"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:162
+msgid "DRIVER MONITOR IS AVAILABLE"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:155
+msgid "DRIVER MONITOR IS UNAVAILABLE"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:763
+msgid "Dashcam Mode"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:183
+msgid "Dashcam mode"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:190
+msgid "Dashcam mode with unsupported car"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:275
+msgid "Data Needed for Calibration. Upload Drive, Try Again"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:345
+msgid "Distraction Level Too High"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:381
+msgid "Door Open"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:553
+msgid "Door open"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:715
+msgid "Drive Above "
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:395 selfdrive/controls/lib/alerts.py:567
+msgid "ESP Off"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:736
+msgid "Enable Community Features in Developer Settings"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:198
+msgid "Ethical Dilemma Detected"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:630
+msgid "Gas Error: Restart the Car"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:481
+msgid "Gas Fault: Restart the Car"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:360 selfdrive/controls/lib/alerts.py:532
+msgid "Gear not D"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:120
+msgid "KEEP EYES ON ROAD"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:113
+msgid "KEEP EYES ON ROAD: User Appears Distracted"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:467 selfdrive/controls/lib/alerts.py:616
+msgid "LKAS Fault: Restart the Car"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:693
+msgid "LKAS Fault: Restart the car to engage"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:779
+msgid "Lane Departure Detected"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:324 selfdrive/controls/lib/alerts.py:402
+msgid "Low Battery"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:438 selfdrive/controls/lib/alerts.py:686
+msgid "Low Memory: Reboot Your EON"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:268
+msgid "Main Switch Off"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:239 selfdrive/controls/lib/alerts.py:246
+#: selfdrive/controls/lib/alerts.py:253
+msgid "Monitor Other Vehicles"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:651
+msgid "No Close Lead Car"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:331 selfdrive/controls/lib/alerts.py:742
+msgid "No Data from EON Sensors"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:510
+msgid "No close lead car"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:170 selfdrive/controls/lib/alerts.py:574
+msgid "Not in Geofenced Area"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:282
+msgid "Out of Storage Space"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:310
+msgid "Park Brake Engaged"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:289
+msgid "Pedal Pressed During Attempt"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:502 selfdrive/controls/lib/alerts.py:658
+msgid "Planner Solution Error"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:679
+msgid "Please Connect to Internet"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:728
+msgid "Please connect to Internet"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:219
+msgid "Press Resume to Move"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:756
+msgid "RAM Critically Low"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:416 selfdrive/controls/lib/alerts.py:672
+msgid "Radar Communication Issue"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:423 selfdrive/controls/lib/alerts.py:430
+#: selfdrive/controls/lib/alerts.py:581 selfdrive/controls/lib/alerts.py:588
+msgid "Radar Error: Restart the Car"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:743 selfdrive/controls/lib/alerts.py:750
+#: selfdrive/controls/lib/alerts.py:757
+msgid "Reboot your EON"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:212
+msgid "Resume Driving Manually"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:488 selfdrive/controls/lib/alerts.py:637
+msgid "Reverse Gear"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:79 selfdrive/controls/lib/alerts.py:86
+msgid "Risk of Collision"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:218
+msgid "STOPPED"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:388
+msgid "Seatbelt Unlatched"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:560
+msgid "Seatbelt unlatched"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:338 selfdrive/controls/lib/alerts.py:749
+msgid "Speaker not found"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:296
+msgid "Speed Too Low"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:517
+msgid "Speed too low"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:238
+msgid "Steer Left to Start Lane Change"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:245
+msgid "Steer Right to Start Lane Change"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:226
+msgid "Steer Unavailable Below "
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:100 selfdrive/controls/lib/alerts.py:107
+#: selfdrive/controls/lib/alerts.py:205
+msgid "Steering Temporarily Unavailable"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:353
+msgid "System Overheated"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:525
+msgid "System overheated"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:92 selfdrive/controls/lib/alerts.py:99
+#: selfdrive/controls/lib/alerts.py:106 selfdrive/controls/lib/alerts.py:211
+#: selfdrive/controls/lib/alerts.py:225 selfdrive/controls/lib/alerts.py:259
+#: selfdrive/controls/lib/alerts.py:778
+msgid "TAKE CONTROL"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:197 selfdrive/controls/lib/alerts.py:352
+#: selfdrive/controls/lib/alerts.py:359 selfdrive/controls/lib/alerts.py:366
+#: selfdrive/controls/lib/alerts.py:373 selfdrive/controls/lib/alerts.py:380
+#: selfdrive/controls/lib/alerts.py:387 selfdrive/controls/lib/alerts.py:394
+#: selfdrive/controls/lib/alerts.py:401 selfdrive/controls/lib/alerts.py:408
+#: selfdrive/controls/lib/alerts.py:415 selfdrive/controls/lib/alerts.py:422
+#: selfdrive/controls/lib/alerts.py:429 selfdrive/controls/lib/alerts.py:437
+#: selfdrive/controls/lib/alerts.py:445 selfdrive/controls/lib/alerts.py:452
+#: selfdrive/controls/lib/alerts.py:459 selfdrive/controls/lib/alerts.py:466
+#: selfdrive/controls/lib/alerts.py:473 selfdrive/controls/lib/alerts.py:480
+#: selfdrive/controls/lib/alerts.py:487 selfdrive/controls/lib/alerts.py:494
+#: selfdrive/controls/lib/alerts.py:501
+msgid "TAKE CONTROL IMMEDIATELY"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:141
+msgid "TOUCH STEERING WHEEL"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:134
+msgid "TOUCH STEERING WHEEL: No Face Detected"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:93
+msgid "Turn Exceeds Steering Limit"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:721
+msgid "Unsupported Giraffe Configuration"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:121
+msgid "User Appears Distracted"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:142
+msgid "User Is Unresponsive"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:128
+msgid "User Was Distracted"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:149
+msgid "User Was Unresponsive"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:770
+msgid "Vehicle Parameter Identification Failed"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:260 selfdrive/controls/lib/alerts.py:595
+msgid "Vision Model Output Uncertain"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:722
+msgid "Visit comma.ai/tg"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:509 selfdrive/controls/lib/alerts.py:516
+msgid "openpilot Canceled"
+msgstr ""
+
+#: selfdrive/controls/lib/alerts.py:204 selfdrive/controls/lib/alerts.py:267
+#: selfdrive/controls/lib/alerts.py:274 selfdrive/controls/lib/alerts.py:281
+#: selfdrive/controls/lib/alerts.py:288 selfdrive/controls/lib/alerts.py:295
+#: selfdrive/controls/lib/alerts.py:302 selfdrive/controls/lib/alerts.py:309
+#: selfdrive/controls/lib/alerts.py:316 selfdrive/controls/lib/alerts.py:323
+#: selfdrive/controls/lib/alerts.py:330 selfdrive/controls/lib/alerts.py:337
+#: selfdrive/controls/lib/alerts.py:344 selfdrive/controls/lib/alerts.py:524
+#: selfdrive/controls/lib/alerts.py:531 selfdrive/controls/lib/alerts.py:538
+#: selfdrive/controls/lib/alerts.py:545 selfdrive/controls/lib/alerts.py:552
+#: selfdrive/controls/lib/alerts.py:559 selfdrive/controls/lib/alerts.py:566
+#: selfdrive/controls/lib/alerts.py:573 selfdrive/controls/lib/alerts.py:580
+#: selfdrive/controls/lib/alerts.py:587 selfdrive/controls/lib/alerts.py:594
+#: selfdrive/controls/lib/alerts.py:601 selfdrive/controls/lib/alerts.py:608
+#: selfdrive/controls/lib/alerts.py:615 selfdrive/controls/lib/alerts.py:622
+#: selfdrive/controls/lib/alerts.py:629 selfdrive/controls/lib/alerts.py:636
+#: selfdrive/controls/lib/alerts.py:643 selfdrive/controls/lib/alerts.py:650
+#: selfdrive/controls/lib/alerts.py:657 selfdrive/controls/lib/alerts.py:664
+#: selfdrive/controls/lib/alerts.py:671 selfdrive/controls/lib/alerts.py:678
+#: selfdrive/controls/lib/alerts.py:685
+msgid "openpilot Unavailable"
+msgstr ""
