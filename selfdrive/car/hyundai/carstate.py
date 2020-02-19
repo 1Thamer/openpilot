@@ -86,6 +86,9 @@ def get_can_parser(CP):
   ]
   if not CP.mdpsBus:
     signals += [
+      ("CR_Mdps_StrAng", "MDPS11", 0),
+      ("CF_Mdps_Stat", "MDPS11", 0),
+
       ("CR_Mdps_StrColTq", "MDPS12", 0),
       ("CF_Mdps_Def", "MDPS12", 0),
       ("CF_Mdps_ToiActive", "MDPS12", 0),
@@ -175,6 +178,9 @@ def get_can2_parser(CP):
   checks = []
   if CP.mdpsBus == 1:
     signals += [
+      ("CR_Mdps_StrAng", "MDPS11", 0),
+      ("CF_Mdps_Stat", "MDPS11", 0),
+
       ("CR_Mdps_StrColTq", "MDPS12", 0),
       ("CF_Mdps_Def", "MDPS12", 0),
       ("CF_Mdps_ToiActive", "MDPS12", 0),
@@ -386,6 +392,8 @@ class CarState():
     self.steer_torque_motor = cp_mdps.vl["MDPS12"]['CR_Mdps_OutTq']
     self.stopped = cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4. if not self.no_radar else False
     self.lead_distance = cp_scc.vl["SCC11"]['ACC_ObjDist'] if not self.no_radar else 0
+    self.mdps11_strang = cp_mdps.vl["MDPS11"]["CR_Mdps_StrAng"]
+    self.mdps11_stat = cp_mdps.vl["MDPS11"]["CF_Mdps_Stat"]
 
     self.user_brake = 0
 
