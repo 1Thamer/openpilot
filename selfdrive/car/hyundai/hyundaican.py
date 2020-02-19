@@ -148,7 +148,7 @@ def create_spas11(packer, car_fingerprint, cnt, en_spas, apply_steer):
 def create_spas12():
   return [1268, 0, "\x00\x00\x00\x00\x00\x00\x00\x00", 1]
 
-def create_ems11(packer, enabled, ems11):
+def create_ems11(packer, ems11, enabled):
   if enabled:
     ems11["VS"] = 0
   return packer.make_can_msg("EMS11", 1, ems11)
