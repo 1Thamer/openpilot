@@ -58,6 +58,21 @@ def get_can_parser(CP):
     ("CF_Lca_Stat", "LCA11", 0),
     ("CF_Lca_IndLeft", "LCA11", 0),
     ("CF_Lca_IndRight", "LCA11", 0),
+
+    ("SWI_IGK", "EMS11", 0),
+    ("F_N_ENG", "EMS11", 0),
+    ("ACK_TCS", "EMS11", 0),
+    ("PUC_STAT", "EMS11", 0),
+    ("TQ_COR_STAT", "EMS11", 0),
+    ("RLY_AC", "EMS11", 0),
+    ("F_SUB_TQI", "EMS11", 0),
+    ("TQI_ACOR", "EMS11", 0),
+    ("N", "EMS11", 0),
+    ("TQI", "EMS11", 0),
+    ("TQFR", "EMS11", 0),
+    ("VS", "EMS11", 0),
+    ("RATIO_TQI_BAS_MAX_STND", "EMS11", 0),
+
   ]
 
   checks = [
@@ -445,3 +460,4 @@ class CarState():
     self.clu11 = cp.vl["CLU11"]
     self.scc12 = cp_scc.vl["SCC12"]
     self.mdps12 = cp_mdps.vl["MDPS12"]
+    self.ems11 = cp.vl["EMS11"]
