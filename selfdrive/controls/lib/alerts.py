@@ -1,4 +1,6 @@
 from cereal import car, log
+from selfdrive.common import i18n
+_ = i18n._
 
 # Priority
 class Priority:
