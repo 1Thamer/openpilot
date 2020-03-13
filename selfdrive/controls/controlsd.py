@@ -90,11 +90,12 @@ def data_sample(CI, CC, sm, can_sock, state, mismatch_counter, can_error_counter
   low_battery = sm['thermal'].batteryPercent < 1 and sm['thermal'].chargingError  # at zero percent battery, while discharging, OP should not allowed
   mem_low = sm['thermal'].memUsedPercent > 90
 
-  #bsm alerts 
-  if lane_change_bsm == LaneChangeBSM.left:
-    events.append(create_event('preventLCA', [ET.WARNING])) 
-  if lane_change_bsm == LaneChangeBSM.right:
-    events.append(create_event('preventLCA', [ET.WARNING]))
+  #bsm alerts
+  if params.get("BsmLaneChangeEnabled", encoding='utf8') == "1":
+    if lane_change_bsm == LaneChangeBSM.left:
+      events.append(create_event('preventLCA', [ET.WARNING])) 
+    if lane_change_bsm == LaneChangeBSM.right:
+      events.append(create_event('preventLCA', [ET.WARNING]))
     
   # Create events for battery, temperature and disk space
   if low_battery:
