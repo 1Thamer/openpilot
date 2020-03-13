@@ -7,6 +7,7 @@ from selfdrive.car.hyundai.carstate import CarState, get_can_parser, get_can2_pa
 from selfdrive.car.hyundai.values import Ecu, ECU_FINGERPRINT, CAR, FINGERPRINTS
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, is_ecu_disconnected, gen_empty_fingerprint
 from selfdrive.car.interfaces import CarInterfaceBase
+from common.params import Params
 
 GearShifter = car.CarState.GearShifter
 ButtonType = car.CarState.ButtonEvent.Type
@@ -21,6 +22,7 @@ class CarInterface(CarInterfaceBase):
     self.brake_pressed_prev = False
     self.cruise_enabled_prev = False
     self.low_speed_alert = False
+    self.mad_mode_enabled = Params().get('MadModeEnabled') == b'1'
 
     # *** init the major players ***
     self.CS = CarState(CP)
@@ -31,6 +33,7 @@ class CarInterface(CarInterfaceBase):
     self.CC = None
     if CarController is not None:
       self.CC = CarController(self.cp.dbc_name, CP.carFingerprint)
+      self.CC.longcontrol = Params().get('LongControlEnabled') == b'1'
 
   @staticmethod
   def compute_gb(accel, speed):
@@ -197,7 +200,6 @@ class CarInterface(CarInterfaceBase):
     ret.sasBus = 1 if 688 in fingerprint[1] and 1296 not in fingerprint[1] else 0
     ret.sccBus = 0 if 1056 in fingerprint[0] else 1 if 1056 in fingerprint[1] and 1296 not in fingerprint[1] \
                                                                      else 2 if 1056 in fingerprint[2] else -1
-    ret.autoLcaEnabled = 0
 
     return ret
 
@@ -207,6 +209,11 @@ class CarInterface(CarInterfaceBase):
     self.cp.update_strings(can_strings)
     self.cp2.update_strings(can_strings)
     self.cp_cam.update_strings(can_strings)
+
+    # Update toggles status every 50 sec
+    if (self.frame % 5000 == 0):
+      self.mad_mode_enabled = Params().get('MadModeEnabled') == b'1'
+      self.CC.longcontrol = Params().get('LongControlEnabled') == b'1'
 
     self.CS.update(self.cp, self.cp2, self.cp_cam)
     # create message
@@ -246,7 +253,7 @@ class CarInterface(CarInterfaceBase):
 
     # cruise state
     # most HKG cars has no long control, it is safer and easier to engage by main on
-    ret.cruiseState.enabled = (self.CS.pcm_acc_status != 0) if self.CC.longcontrol else bool(self.CS.main_on)
+    ret.cruiseState.enabled = (self.CS.pcm_acc_status != 0) if self.CC.longcontrol or not self.mad_mode_enabled else bool(self.CS.main_on)
     if self.CS.pcm_acc_status != 0:
       ret.cruiseState.speed = self.CS.cruise_set_speed
     else:
@@ -319,10 +326,10 @@ class CarInterface(CarInterfaceBase):
 
     # disable on pedals rising edge or when brake is pressed and speed isn't zero
     if ((ret.gasPressed and not self.gas_pressed_prev) or \
-      (ret.brakePressed and (not self.brake_pressed_prev or ret.vEgoRaw > 0.1))) and self.CC.longcontrol:
+      (ret.brakePressed and (not self.brake_pressed_prev or ret.vEgoRaw > 0.1))) and (self.CC.longcontrol or not self.mad_mode_enabled):
       events.append(create_event('pedalPressed', [ET.NO_ENTRY, ET.USER_DISABLE]))
 
-    if ret.gasPressed and self.CC.longcontrol:
+    if ret.gasPressed and (self.CC.longcontrol or not self.mad_mode_enabled):
       events.append(create_event('pedalPressed', [ET.PRE_ENABLE]))
 
     if self.low_speed_alert and not self.CS.mdps_bus :
