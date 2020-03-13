@@ -509,6 +509,14 @@ def main():
     params.put("OpenpilotEnabledToggle", "1")
   if params.get("LaneChangeEnabled") is None:
     params.put("LaneChangeEnabled", "1")
+  if params.get("LongControlEnabled") is None:
+    params.put("LongControlEnabled", "0")
+  if params.get("MadModeEnabled") is None:
+    params.put("MadModeEnabled", "0")
+  if params.get("AutoLaneChangeEnabled") is None:
+    params.put("AutoLaneChangeEnabled", "0")
+  if params.get("BsmLaneChangeEnabled") is None:
+    params.put("BsmLaneChangeEnabled", "1")
 
   # is this chffrplus?
   if os.getenv("PASSIVE") is not None:
