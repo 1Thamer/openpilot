@@ -163,7 +163,7 @@ DBC = {
   CAR.IONIQ_EV_LTD: dbc_dict('hyundai_kia_generic', None),
   CAR.KONA: dbc_dict('hyundai_kia_generic', None),
   CAR.KONA_EV: dbc_dict('hyundai_kia_generic', None),
-  CAR.KIA_FORTE: dbc_dict('hyundai_kia_generic_scc_emulation', None),
+  CAR.KIA_FORTE: dbc_dict('hyundai_kia_scc_emulation', None),
   CAR.ELANTRA_GT_I30: dbc_dict('hyundai_kia_generic', None),
   CAR.KIA_SPORTAGE: dbc_dict('hyundai_kia_generic', None),
 }
