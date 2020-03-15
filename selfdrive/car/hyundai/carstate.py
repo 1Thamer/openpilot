@@ -104,13 +104,49 @@ def get_can_parser(CP):
       ("CF_Lvr_CruiseSet", "LVR12", 0),
     ]
   elif not CP.sccBus:
-    signals += [
+    if CP.carFingerprint in FEATURES["use_scc_emulation"]:
+      signals += [
       ("MainMode_ACC", "SCC11", 0),
-      ("VSetDis", "SCC11", 0),
       ("SCCInfoDisplay", "SCC11", 0),
-      ("ACC_ObjDist", "SCC11", 0),
-      ("TauGapSet", "SCC11", 0),
+      ("AliveCounterACC", "SCC11", 0),
+      ("VSetDis", "SCC11", 0),
+      ("ObjValid", "SCC11", 0),
+      ("DriverAlertDisplay", "SCC11", 0),
+      ("TauGapSet", "SCC11", 1),
+      ("ACC_ObjStatus", "SCC11", 0),
+      ("ACC_ObjLatPos", "SCC11", 0),
+      ("ACC_ObjDist", "SCC11", 150),
+      ("ACC_ObjRelSpd", "SCC11", 0),
+      ("Navi_SCC_Curve_Status", "SCC11", 0),
+      ("Navi_SCC_Curve_Act", "SCC11", 0),
+      ("Navi_SCC_Camera_Act", "SCC11", 0),
+      ("Navi_SCC_Camera_Status", "SCC11", 0),
+      
+      ("SCCDrvModeRValue", "SCC13", 2),
+      ("SCC_Equip", "SCC13", 1),
+      ("AebDrvSetStatus", "SCC13", 0),
+      ("Lead_Veh_Dep_Alert_USM", "SCC13", 0),
 
+      ("ComfortBandUpper", "SCC14", 0.24),
+      ("ComfortBandLower", "SCC14", 0.24),
+      ("JerkUpperLimit", "SCC14", 0),
+      ("JerkLowerLimit", "SCC14", 0),
+      ("ColRiskF", "SCC14", 0),
+      ("SCCMode", "SCC14", 0),
+      ]
+      checks += [
+      ("SCC13", 5),
+      ("SCC14", 50),
+      ]
+    else:
+      signals += [
+        ("MainMode_ACC", "SCC11", 0),
+        ("VSetDis", "SCC11", 0),
+        ("SCCInfoDisplay", "SCC11", 0),
+        ("ACC_ObjDist", "SCC11", 0),
+        ("TauGapSet", "SCC11", 0),
+      ]
+    signals += [
       ("ACCMode", "SCC12", 0),
       ("CF_VSM_Prefill", "SCC12", 0),
       ("CF_VSM_DecCmdAct", "SCC12", 0),
@@ -289,7 +325,7 @@ def get_camera_parser(CP):
 class CarState(CarStateBase):
   def __init__(self, CP):
     super().__init__(CP)
-    self.no_radar = CP.sccBus == -1
+    self.no_radar = CP.sccBus == -1 or CP.carFingerprint in FEATURES["use_scc_emulation"]
     self.mdps_bus = CP.mdpsBus
     self.sas_bus = CP.sasBus
     self.scc_bus = CP.sccBus
@@ -419,5 +455,8 @@ class CarState(CarStateBase):
     # save the entire LKAS11, CLU11, SCC12 and MDPS12
     self.lkas11 = cp_cam.vl["LKAS11"]
     self.clu11 = cp.vl["CLU11"]
+    self.scc11 = cp_scc.vl["SCC11"]
     self.scc12 = cp_scc.vl["SCC12"]
+    self.scc13 = cp_scc.vl["SCC13"]
+    self.scc14 = cp_scc.vl["SCC14"]
     self.mdps12 = cp_mdps.vl["MDPS12"]
