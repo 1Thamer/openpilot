@@ -136,7 +136,7 @@ class CarController():
 
     if frame == 0: # initialize counts from last received count signals
       self.lkas11_cnt = CS.lkas11["CF_Lkas_MsgCount"] + 1
-      self.scc12_cnt = CS.scc12["CR_VSM_Alive"] + 1 if not CS.no_radar else 0
+      self.scc12_cnt = CS.scc12["CR_VSM_Alive"] + 1 if self.sccEmulation or not CS.no_radar else 0
 
     self.lkas11_cnt %= 0x10
     self.scc12_cnt %= 0xF
@@ -156,7 +156,7 @@ class CarController():
     else: # send mdps12 to LKAS to prevent LKAS error if no cancel cmd
       can_sends.append(create_mdps12(self.packer, self.car_fingerprint, self.mdps12_cnt, CS.mdps12))
 
-    if CS.scc_bus and self.longcontrol and frame % 2: # send scc12 to car if SCC not on bus 0 and longcontrol enabled
+    if ((CS.scc_bus and self.longcontrol) or self.sccEmulation) and frame % 2: # send scc12 to car if SCC not on bus 0 and longcontrol enabled
       if self.sccEmulation:
         can_sends.append(create_scc11(self.packer, enabled, CS.scc11))
         can_sends.append(create_scc14(self.packer, enabled, CS.scc14))
@@ -165,7 +165,7 @@ class CarController():
       can_sends.append(create_scc12(self.packer, apply_accel, enabled, self.scc12_cnt, self.sccEmulation, CS.scc12))
       self.scc12_cnt += 1
 
-    if CS.scc_bus and self.longcontrol and self.sccEmulation and frame % 20:
+    if ((CS.scc_bus and self.longcontrol) or self.sccEmulation) and frame % 2:
       can_sends.append(create_scc13(self.packer, CS.scc13))
 
     if CS.stopped:
