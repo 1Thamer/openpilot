@@ -195,7 +195,7 @@ class CarInterface(CarInterfaceBase):
     ret.brakeMaxV = [1., 0.8]
 
     ret.enableCamera = is_ecu_disconnected(fingerprint[0], FINGERPRINTS, ECU_FINGERPRINT, candidate, Ecu.fwdCamera) or has_relay
-    ret.openpilotLongitudinalControl = True if any([1056 in fingerprint[0], 1056 in fingerprint[1], 1056 in fingerprint[2]], candidate in FEATURES['use_scc_emulation']) else False
+    ret.openpilotLongitudinalControl = True if any([1056 in fingerprint[0], 1056 in fingerprint[1], 1056 in fingerprint[2], candidate in FEATURES['use_scc_emulation']]) else False
 
     ret.stoppingControl = True
     ret.startAccel = 0.0
