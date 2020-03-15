@@ -132,7 +132,7 @@ def get_can_parser(CP):
       ("JerkUpperLimit", "SCC14", 0),
       ("JerkLowerLimit", "SCC14", 0),
       ("ColRiskF", "SCC14", 0),
-      ("SCCMode", "SCC14", 0),
+      ("SCCMode2", "SCC14", 0),
       ]
       checks += [
       ("SCC13", 5),
