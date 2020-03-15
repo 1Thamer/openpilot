@@ -2,8 +2,10 @@ from cereal import car
 from common.numpy_fast import clip
 from selfdrive.car import apply_std_steer_torque_limits
 from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, \
-                                             create_scc12, create_mdps12
-from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
+                                             create_scc11, create_scc12, \
+                                             create_scc13, create_scc14, \
+                                             create_mdps12
+from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR, FEATURES
 from opendbc.can.packer import CANPacker
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
@@ -72,6 +74,7 @@ class CarController():
     self.lkas_button = 1
     self.lkas_button_last = 0
     self.longcontrol = 0 #TODO: make auto
+    self.sccEmulation = car_fingerprint in FEATURES["use_scc_emulation"]
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
               left_line, right_line, left_lane_depart, right_lane_depart):
@@ -154,8 +157,16 @@ class CarController():
       can_sends.append(create_mdps12(self.packer, self.car_fingerprint, self.mdps12_cnt, CS.mdps12))
 
     if CS.scc_bus and self.longcontrol and frame % 2: # send scc12 to car if SCC not on bus 0 and longcontrol enabled
-      can_sends.append(create_scc12(self.packer, apply_accel, enabled, self.scc12_cnt, CS.scc12))
+      if self.sccEmulation:
+        can_sends.append(create_scc11(self.packer, enabled, CS.scc11))
+        can_sends.append(create_scc14(self.packer, enabled, CS.scc14))
+        self.fca11_cnt+=1
+        # can_sends.append(create_fca11(self.packer, self.fca11_cnt, CS.fca11))
+      can_sends.append(create_scc12(self.packer, apply_accel, enabled, self.scc12_cnt, self.sccEmulation, CS.scc12))
       self.scc12_cnt += 1
+
+    if CS.scc_bus and self.longcontrol and self.sccEmulation and frame % 20:
+      can_sends.append(create_scc13(self.packer, CS.scc13))
 
     if CS.stopped:
       # run only first time when the car stopped
