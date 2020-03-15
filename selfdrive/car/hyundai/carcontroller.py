@@ -160,7 +160,7 @@ class CarController():
       if self.sccEmulation:
         can_sends.append(create_scc11(self.packer, enabled, CS.scc11))
         can_sends.append(create_scc14(self.packer, enabled, CS.scc14))
-        self.fca11_cnt+=1
+        # self.fca11_cnt+=1
         # can_sends.append(create_fca11(self.packer, self.fca11_cnt, CS.fca11))
       can_sends.append(create_scc12(self.packer, apply_accel, enabled, self.scc12_cnt, self.sccEmulation, CS.scc12))
       self.scc12_cnt += 1
