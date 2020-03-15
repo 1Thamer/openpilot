@@ -27,7 +27,7 @@ class RadarInterface(RadarInterfaceBase):
     self.updated_messages = set()
     self.trigger_msg = 0x420
     self.track_id = 0
-    self.no_radar = CP.sccBus == -1
+    self.no_radar = CP.sccBus == -1 or CP.carFingerprint in FEATURES["use_scc_emulation"]
 
   def update(self, can_strings):
     if self.no_radar:
