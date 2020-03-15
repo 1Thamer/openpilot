@@ -83,20 +83,20 @@ def create_scc11(packer, enabled, scc11):
     objDist = 3
   values = {
     "MainMode_ACC": enabled,
-    "SCCInfoDisplay": 0,#
-    "AliveCounterACC": 0,#
-    "VSetDis": 0,  # km/h velosity
+    "SCCInfoDisplay": scc11["SCCInfoDisplay"],#
+    "AliveCounterACC": scc11["AliveCounterACC"],#
+    "VSetDis": scc11["VSetDis"],  # km/h velosity
     "ObjValid": objValid,#
-    "DriverAlertDisplay": 0,#
-    "TauGapSet": 1,#
+    "DriverAlertDisplay": scc11["DriverAlertDisplay"],#
+    "TauGapSet": scc11["TauGapSet"],#
+    "Navi_SCC_Curve_Status": scc11["Navi_SCC_Curve_Status"],#
+    "Navi_SCC_Curve_Act": scc11["Navi_SCC_Curve_Act"],#
+    "Navi_SCC_Camera_Act": scc11["Navi_SCC_Camera_Act"],#
+    "Navi_SCC_Camera_Status": scc11["Navi_SCC_Camera_Status"],#
     "ACC_ObjStatus": objStatus,#
-    "ACC_ObjLatPos": 0,
     "ACC_ObjDist": objDist, # no object in front
-    "ACC_ObjRelSpd": 0,
-    "Navi_SCC_Curve_Status": 0,#
-    "Navi_SCC_Curve_Act": 0,#
-    "Navi_SCC_Camera_Act": 0,#
-    "Navi_SCC_Camera_Status": 0#
+    "ACC_ObjLatPos": scc11["ACC_ObjLatPos"],
+    "ACC_ObjRelSpd": scc11["ACC_ObjRelSpd"],
   }
   return packer.make_can_msg("SCC11", 0, values)
 
@@ -156,37 +156,32 @@ def create_scc12(packer, apply_accel, enabled, cnt, sccEmulation, scc12):
 
 def create_scc13(packer, scc13):
   values = {
-    "SCCDrvModeRValue" : 2,#
-    "SCC_Equip" : 1,#
-    "AebDrvSetStatus" : 0,
-    "Lead_Veh_Dep_Alert_USM" : 0
+    "SCCDrvModeRValue" : scc13["SCCDrvModeRValue"],#
+    "SCC_Equip" : scc13["SCC_Equip"],#
+    "AebDrvSetStatus" : scc13["AebDrvSetStatus"],
   }
   return packer.make_can_msg("SCC13", 0, values)
 
 def create_scc14(packer, enabled, scc14):
-  values = {
-    "JerkUpperLimit" : 0,
-    "JerkLowerLimit" : 0,
-    "SCCMode2" : 0,
-    "ColRiskF" : 0,
-    "ComfortBandUpper" : 0.24,
-    "ComfortBandLower" : 0.24,
-  }
   if enabled:
     values = {
-      "JerkUpperLimit" : 0,
-      "JerkLowerLimit" : 0,
-      "SCCMode2" : 1,
-      "ColRiskF" : 2,
-      "ComfortBandUpper" : 1,
-      "ComfortBandLower" : 0.5,
+      "JerkUpperLimit" : scc14["JerkUpperLimit"],
+      "JerkLowerLimit" : scc14["JerkLowerLimit"],
+      "SCCMode" : scc14["SCCMode"],
+      "ColRiskF" : scc14["ColRiskF"],
+      "ComfortBandUpper" : scc14["ComfortBandUpper"],
+      "ComfortBandLower" : scc14["ComfortBandLower"],
+    }
+  else:
+    values = {
+      "JerkUpperLimit" : scc14["JerkUpperLimit"],
+      "JerkLowerLimit" : scc14["JerkLowerLimit"],
+      "SCCMode2" : scc14["SCCMode2"],
+      "ColRiskF" : scc14["ColRiskF"],
+      "ComfortBandUpper" : scc14["ComfortBandUpper"],
+      "ComfortBandLower" : scc14["ComfortBandLower"],
     }
   return packer.make_can_msg("SCC14", 0, values)
-
-  dat = packer.make_can_msg("SCC12", 0, values)[2]
-  values["CR_VSM_ChkSum"] = 16 - sum([sum(divmod(i, 16)) for i in dat]) % 16
-
-  return packer.make_can_msg("SCC12", 0, values)
 
 def create_mdps12(packer, car_fingerprint, cnt, mdps12):
   values = {

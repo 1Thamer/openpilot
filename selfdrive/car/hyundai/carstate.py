@@ -125,14 +125,13 @@ def get_can_parser(CP):
       ("SCCDrvModeRValue", "SCC13", 2),
       ("SCC_Equip", "SCC13", 1),
       ("AebDrvSetStatus", "SCC13", 0),
-      ("Lead_Veh_Dep_Alert_USM", "SCC13", 0),
 
       ("ComfortBandUpper", "SCC14", 0.24),
       ("ComfortBandLower", "SCC14", 0.24),
       ("JerkUpperLimit", "SCC14", 0),
       ("JerkLowerLimit", "SCC14", 0),
       ("ColRiskF", "SCC14", 0),
-      ("SCCMode2", "SCC14", 0),
+      ("SCCMode", "SCC14", 0),
       ]
       checks += [
       ("SCC13", 5),
