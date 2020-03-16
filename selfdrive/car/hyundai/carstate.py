@@ -103,76 +103,76 @@ def get_can_parser(CP):
       ("CRUISE_LAMP_M", "EMS16", 0),
       ("CF_Lvr_CruiseSet", "LVR12", 0),
     ]
-  if not CP.sccBus:
-    if CP.carFingerprint in FEATURES["use_scc_emulation"]:
-      signals += [
-      ("MainMode_ACC", "SCC11", 0),
-      ("SCCInfoDisplay", "SCC11", 0),
-      ("AliveCounterACC", "SCC11", 0),
-      ("VSetDis", "SCC11", 0),
-      ("ObjValid", "SCC11", 0),
-      ("DriverAlertDisplay", "SCC11", 0),
-      ("TauGapSet", "SCC11", 1),
-      ("ACC_ObjStatus", "SCC11", 0),
-      ("ACC_ObjLatPos", "SCC11", 0),
-      ("ACC_ObjDist", "SCC11", 150),
-      ("ACC_ObjRelSpd", "SCC11", 0),
-      ("Navi_SCC_Curve_Status", "SCC11", 0),
-      ("Navi_SCC_Curve_Act", "SCC11", 0),
-      ("Navi_SCC_Camera_Act", "SCC11", 0),
-      ("Navi_SCC_Camera_Status", "SCC11", 0),
+  # if not CP.sccBus:
+    # if CP.carFingerprint in FEATURES["use_scc_emulation"]:
+    #   signals += [
+    #   ("MainMode_ACC", "SCC11", 0),
+    #   ("SCCInfoDisplay", "SCC11", 0),
+    #   ("AliveCounterACC", "SCC11", 0),
+    #   ("VSetDis", "SCC11", 0),
+    #   ("ObjValid", "SCC11", 0),
+    #   ("DriverAlertDisplay", "SCC11", 0),
+    #   ("TauGapSet", "SCC11", 1),
+    #   ("ACC_ObjStatus", "SCC11", 0),
+    #   ("ACC_ObjLatPos", "SCC11", 0),
+    #   ("ACC_ObjDist", "SCC11", 150),
+    #   ("ACC_ObjRelSpd", "SCC11", 0),
+    #   ("Navi_SCC_Curve_Status", "SCC11", 0),
+    #   ("Navi_SCC_Curve_Act", "SCC11", 0),
+    #   ("Navi_SCC_Camera_Act", "SCC11", 0),
+    #   ("Navi_SCC_Camera_Status", "SCC11", 0),
       
-      ("SCCDrvModeRValue", "SCC13", 2),
-      ("SCC_Equip", "SCC13", 1),
-      ("AebDrvSetStatus", "SCC13", 0),
+    #   ("SCCDrvModeRValue", "SCC13", 2),
+    #   ("SCC_Equip", "SCC13", 1),
+    #   ("AebDrvSetStatus", "SCC13", 0),
 
-      ("ComfortBandUpper", "SCC14", 0.24),
-      ("ComfortBandLower", "SCC14", 0.24),
-      ("JerkUpperLimit", "SCC14", 0),
-      ("JerkLowerLimit", "SCC14", 0),
-      ("ColRiskF", "SCC14", 0),
-      ("SCCMode", "SCC14", 0),
-      ]
-      checks += [
-      ("SCC13", 5),
-      ("SCC14", 50),
-      ]
-    else:
-      signals += [
-        ("MainMode_ACC", "SCC11", 0),
-        ("VSetDis", "SCC11", 0),
-        ("SCCInfoDisplay", "SCC11", 0),
-        ("ACC_ObjDist", "SCC11", 0),
-        ("TauGapSet", "SCC11", 0),
-      ]
-    signals += [
-      ("ACCMode", "SCC12", 0),
-      ("CF_VSM_Prefill", "SCC12", 0),
-      ("CF_VSM_DecCmdAct", "SCC12", 0),
-      ("CF_VSM_HBACmd", "SCC12", 0),
-      ("CF_VSM_Warn", "SCC12", 0),
-      ("CF_VSM_Stat", "SCC12", 0),
-      ("CF_VSM_BeltCmd", "SCC12", 0),
-      ("ACCFailInfo", "SCC12", 0),
-      ("ACCMode", "SCC12", 0),
-      ("StopReq", "SCC12", 0),
-      ("CR_VSM_DecCmd", "SCC12", 0),
-      ("aReqMax", "SCC12", 0),
-      ("TakeOverReq", "SCC12", 0),
-      ("PreFill", "SCC12", 0),
-      ("aReqMin", "SCC12", 0),
-      ("CF_VSM_ConfMode", "SCC12", 0),
-      ("AEB_Failinfo", "SCC12", 0),
-      ("AEB_Status", "SCC12", 0),
-      ("AEB_CmdAct", "SCC12", 0),
-      ("AEB_StopReq", "SCC12", 0),
-      ("CR_VSM_Alive", "SCC12", 0),
-      ("CR_VSM_ChkSum", "SCC12", 0),
-    ]
-    checks += [
-      ("SCC11", 50),
-      ("SCC12", 50),
-    ]
+    #   ("ComfortBandUpper", "SCC14", 0.24),
+    #   ("ComfortBandLower", "SCC14", 0.24),
+    #   ("JerkUpperLimit", "SCC14", 0),
+    #   ("JerkLowerLimit", "SCC14", 0),
+    #   ("ColRiskF", "SCC14", 0),
+    #   ("SCCMode", "SCC14", 0),
+    #   ]
+    #   checks += [
+    #   ("SCC13", 5),
+    #   ("SCC14", 50),
+    #   ]
+    # else:
+    #   signals += [
+    #     ("MainMode_ACC", "SCC11", 0),
+    #     ("VSetDis", "SCC11", 0),
+    #     ("SCCInfoDisplay", "SCC11", 0),
+    #     ("ACC_ObjDist", "SCC11", 0),
+    #     ("TauGapSet", "SCC11", 0),
+    #   ]
+    # signals += [
+    #   ("ACCMode", "SCC12", 0),
+    #   ("CF_VSM_Prefill", "SCC12", 0),
+    #   ("CF_VSM_DecCmdAct", "SCC12", 0),
+    #   ("CF_VSM_HBACmd", "SCC12", 0),
+    #   ("CF_VSM_Warn", "SCC12", 0),
+    #   ("CF_VSM_Stat", "SCC12", 0),
+    #   ("CF_VSM_BeltCmd", "SCC12", 0),
+    #   ("ACCFailInfo", "SCC12", 0),
+    #   ("ACCMode", "SCC12", 0),
+    #   ("StopReq", "SCC12", 0),
+    #   ("CR_VSM_DecCmd", "SCC12", 0),
+    #   ("aReqMax", "SCC12", 0),
+    #   ("TakeOverReq", "SCC12", 0),
+    #   ("PreFill", "SCC12", 0),
+    #   ("aReqMin", "SCC12", 0),
+    #   ("CF_VSM_ConfMode", "SCC12", 0),
+    #   ("AEB_Failinfo", "SCC12", 0),
+    #   ("AEB_Status", "SCC12", 0),
+    #   ("AEB_CmdAct", "SCC12", 0),
+    #   ("AEB_StopReq", "SCC12", 0),
+    #   ("CR_VSM_Alive", "SCC12", 0),
+    #   ("CR_VSM_ChkSum", "SCC12", 0),
+    # ]
+    # checks += [
+    #   ("SCC11", 50),
+    #   ("SCC12", 50),
+    # ]
   if CP.carFingerprint in FEATURES["use_cluster_gears"]:
     signals += [
       ("CF_Clu_InhibitD", "CLU15", 0),
