@@ -5,11 +5,13 @@ from selfdrive.controls.lib.drive_helpers import EventTypes as ET, create_event
 from selfdrive.car.hyundai.values import Ecu, ECU_FINGERPRINT, CAR, FINGERPRINTS
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, is_ecu_disconnected, gen_empty_fingerprint
 from selfdrive.car.interfaces import CarInterfaceBase
+from common.params import Params
 
 class CarInterface(CarInterfaceBase):
   def __init__(self, CP, CarController):
     super().__init__(CP, CarController, CarState)
     self.cp2 = get_can2_parser(CP)
+    self.mad_mode_enabled = Params().get('MadModeEnabled') == b'1'
 
   @staticmethod
   def compute_gb(accel, speed):
@@ -161,7 +163,6 @@ class CarInterface(CarInterfaceBase):
     ret.sasBus = 1 if 688 in fingerprint[1] and 1296 not in fingerprint[1] else 0
     ret.sccBus = 0 if 1056 in fingerprint[0] else 1 if 1056 in fingerprint[1] and 1296 not in fingerprint[1] \
                                                                      else 2 if 1056 in fingerprint[2] else -1
-    ret.autoLcaEnabled = 0
     ret.radarOffCan = ret.sccBus == -1
 
     return ret
@@ -171,11 +172,15 @@ class CarInterface(CarInterfaceBase):
     self.cp2.update_strings(can_strings)
     self.cp_cam.update_strings(can_strings)
 
+    # Update toggles status every 50 sec
+    if (self.frame % 5000 == 0):
+      self.mad_mode_enabled = Params().get('MadModeEnabled') == b'1'
+      self.CC.longcontrol = Params().get('LongControlEnabled') == b'1'
     ret = self.CS.update(self.cp, self.cp2, self.cp_cam)
     ret.canValid = self.cp.can_valid and self.cp2.can_valid and self.cp_cam.can_valid
 
     # most HKG cars has no long control, it is safer and easier to engage by main on
-    ret.cruiseState.enabled = ret.cruiseState.available if not self.CC.longcontrol else ret.cruiseState.enabled
+    ret.cruiseState.enabled = ret.cruiseState.available if not self.CC.longcontrol and self.mad_mode_enabled else ret.cruiseState.enabled
     # some Optima only has blinker flash signal
     if self.CP.carFingerprint == CAR.KIA_OPTIMA:
       ret.leftBlinker = self.CS.left_blinker_flash or self.CS.prev_left_blinker and self.CC.turning_signal_timer
@@ -221,10 +226,10 @@ class CarInterface(CarInterfaceBase):
 
     # disable on pedals rising edge or when brake is pressed and speed isn't zero
     if ((ret.gasPressed and not self.gas_pressed_prev) or \
-      (ret.brakePressed and (not self.brake_pressed_prev or ret.vEgoRaw > 0.1))) and self.CC.longcontrol:
+      (ret.brakePressed and (not self.brake_pressed_prev or ret.vEgoRaw > 0.1))) and (self.CC.longcontrol or not self.mad_mode_enabled):
       events.append(create_event('pedalPressed', [ET.NO_ENTRY, ET.USER_DISABLE]))
 
-    if ret.gasPressed and self.CC.longcontrol:
+    if ret.gasPressed and (self.CC.longcontrol or not self.mad_mode_enabled):
       events.append(create_event('pedalPressed', [ET.PRE_ENABLE]))
 
     if self.low_speed_alert and not self.CS.mdps_bus :

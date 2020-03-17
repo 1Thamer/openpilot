@@ -521,6 +521,10 @@ def main():
     ("LastUpdateTime", datetime.datetime.now().isoformat().encode('utf8')),
     ("OpenpilotEnabledToggle", "1"),
     ("LaneChangeEnabled", "1"),
+    ("LongControlEnabled", "0"),
+    ("MadModeEnabled", "0"),
+    ("AutoLaneChangeEnabled", "0"),
+    ("BsmLaneChangeEnabled", "1"),
   ]
 
   # set unset params
