@@ -57,9 +57,9 @@ def process_hud_alert(enabled, button_on, fingerprint, visual_alert, left_line,
   return hud_alert, lane_visible, left_lane_warning, right_lane_warning
 
 class CarController():
-  def __init__(self, dbc_name, car_fingerprint):
+  def __init__(self, dbc_name, CP, VM):
     self.packer = CANPacker(dbc_name)
-    self.car_fingerprint = car_fingerprint
+    self.car_fingerprint = CP.carFingerprint
     self.accel_steady = 0
     self.apply_steer_last = 0
     self.steer_rate_limited = False
@@ -86,7 +86,7 @@ class CarController():
 
     ### Steering Torque
     new_steer = actuators.steer * SteerLimitParams.STEER_MAX
-    apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.steer_torque_driver, SteerLimitParams)
+    apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, SteerLimitParams)
     self.steer_rate_limited = new_steer != apply_steer
 
     ### LKAS button to temporarily disable steering
