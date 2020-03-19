@@ -35,9 +35,10 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
 
   bool valid = addr_safety_check(to_push, hyundai_rx_checks, HYUNDAI_RX_CHECK_LEN,
                                  NULL, NULL, NULL);
+  int addr = GET_ADDR(to_push);
+  int bus = GET_BUS(to_push);
 
-  if (valid && (GET_BUS(to_push) != 1 || !hyundai_LCAN_on_bus1)) {
-    int addr = GET_ADDR(to_push);
+  if (valid && (bus != 1 || !hyundai_LCAN_on_bus1)) {
 
     if (addr == 593) {
       int torque_driver_new = ((GET_BYTES_04(to_push) & 0x7ff) * 0.79) - 808; // scale down new driver torque signal to match previous one
