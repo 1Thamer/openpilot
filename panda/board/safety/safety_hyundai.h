@@ -36,7 +36,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
   bool valid = addr_safety_check(to_push, hyundai_rx_checks, HYUNDAI_RX_CHECK_LEN,
                                  NULL, NULL, NULL);
 
-  if (valid && GET_BUS(to_push) == 0) {
+  if (valid && (GET_BUS(to_push) != 1 || !hyundai_LCAN_on_bus1)) {
     int addr = GET_ADDR(to_push);
 
     if (addr == 593) {
@@ -46,7 +46,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     }
 
     // enter controls on rising edge of ACC, exit controls on ACC off
-    if (addr == 1057 && OP_SCC_live && (bus != 1 || !hyundai_LCAN_on_bus1)) { // for cars with long control
+    if (addr == 1057 && OP_SCC_live) { // for cars with long control
       hyundai_has_scc = true;
       // 2 bits: 13-14
       int cruise_engaged = (GET_BYTES_04(to_push) >> 13) & 0x3;
@@ -58,7 +58,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       }
       hyundai_cruise_engaged_last = cruise_engaged;
     }
-    if (addr == 1056 && !OP_SCC_live && (bus != 1 || !hyundai_LCAN_on_bus1)) { // for cars without long control
+    if (addr == 1056 && !OP_SCC_live) { // for cars without long control
       hyundai_has_scc = true;
       // 2 bits: 13-14
       int cruise_engaged = GET_BYTES_04(to_push) & 0x1; // ACC main_on signal
@@ -95,7 +95,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     }
 
     // exit controls on rising edge of gas press
-    if (addr == 608 && OP_SCC_live && bus == 0 ) { // for cars with long control
+    if (addr == 608 && OP_SCC_live) { // for cars with long control
       bool gas_pressed = (GET_BYTE(to_push, 7) >> 6) != 0;
       if (gas_pressed && !gas_pressed_prev) {
         controls_allowed = 0;
@@ -111,7 +111,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     }
 
     // exit controls on rising edge of brake press
-    if (addr == 916 && OP_SCC_live && bus == 0) { // for cars with long control
+    if (addr == 916 && OP_SCC_live) { // for cars with long control
       bool brake_pressed = (GET_BYTE(to_push, 6) >> 7) != 0;
       if (brake_pressed && (!brake_pressed_prev || (hyundai_speed > HYUNDAI_STANDSTILL_THRSLD))) {
         controls_allowed = 0;
@@ -123,25 +123,25 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     if ((safety_mode_cnt > RELAY_TRNS_TIMEOUT) && (addr == 832)) {
       relay_malfunction = true;
     }
-    // check if we have a LCAN on Bus1
-    if (bus == 1 && (addr == 1296 || addr == 524)) {
-      if (hyundai_forward_bus1 || !hyundai_LCAN_on_bus1) {
-        hyundai_LCAN_on_bus1 = true;
-        hyundai_forward_bus1 = false;
-      }
+  }
+  // check if we have a LCAN on Bus1
+  if (bus == 1 && (addr == 1296 || addr == 524)) {
+    if (hyundai_forward_bus1 || !hyundai_LCAN_on_bus1) {
+      hyundai_LCAN_on_bus1 = true;
+      hyundai_forward_bus1 = false;
     }
-    // check if we have a MDPS on Bus1 and LCAN not on the bus
-    if (bus == 1 && (addr == 593 || addr == 897) && !hyundai_LCAN_on_bus1) {
-      if (!hyundai_forward_bus1) {
-        hyundai_mdps_bus = bus;
-        hyundai_forward_bus1 = true;
-      }
+  }
+  // check if we have a MDPS on Bus1 and LCAN not on the bus
+  if (bus == 1 && (addr == 593 || addr == 897) && !hyundai_LCAN_on_bus1) {
+    if (!hyundai_forward_bus1) {
+      hyundai_mdps_bus = bus;
+      hyundai_forward_bus1 = true;
     }
-    // check if we have a SCC on Bus1 and LCAN not on the bus
-    if (bus == 1 && addr == 1057 && !hyundai_LCAN_on_bus1) {
-      if (!hyundai_forward_bus1) {
-        hyundai_forward_bus1 = true;
-      }
+  }
+  // check if we have a SCC on Bus1 and LCAN not on the bus
+  if (bus == 1 && addr == 1057 && !hyundai_LCAN_on_bus1) {
+    if (!hyundai_forward_bus1) {
+      hyundai_forward_bus1 = true;
     }
   }
   return valid;
