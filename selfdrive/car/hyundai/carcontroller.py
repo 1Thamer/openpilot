@@ -79,6 +79,8 @@ class CarController():
     # *** compute control surfaces ***
 
     # gas and brake
+    scc_active = enabled and self.longcontrol and CS.scc12["ACCMode"] == 1
+
     apply_accel = actuators.gas - actuators.brake
 
     apply_accel, self.accel_steady = accel_hysteresis(apply_accel, self.accel_steady)
@@ -103,7 +105,7 @@ class CarController():
       lkas_active = 0
 
     # Disable steering while turning blinker on and speed below 60 kph
-    if CS.left_blinker_on or CS.right_blinker_on:
+    if CS.left_blinker or CS.right_blinker:
       if self.car_fingerprint not in [CAR.KIA_OPTIMA, CAR.KIA_OPTIMA_H]:
         self.turning_signal_timer = 100  # Disable for 1.0 Seconds after blinker turned off
       elif CS.left_blinker_flash or CS.right_blinker_flash: # Optima has blinker flash signal only
@@ -153,8 +155,8 @@ class CarController():
     else: # send mdps12 to LKAS to prevent LKAS error if no cancel cmd
       can_sends.append(create_mdps12(self.packer, self.car_fingerprint, self.mdps12_cnt, CS.mdps12))
 
-    if CS.scc_bus and self.longcontrol and frame % 2: # send scc12 to car if SCC not on bus 0 and longcontrol enabled
-      can_sends.append(create_scc12(self.packer, apply_accel, enabled, self.scc12_cnt, CS.scc12))
+    if CS.scc_bus and frame % 2: # send scc12 to car if SCC not on bus 0 and longcontrol enabled
+      can_sends.append(create_scc12(self.packer, apply_accel, scc_active, self.scc12_cnt, CS.scc12))
       self.scc12_cnt += 1
 
     if CS.stopped:
