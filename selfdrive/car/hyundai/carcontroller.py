@@ -6,6 +6,7 @@ from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, \
                                              create_spas11, create_spas12, create_ems11
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
 from opendbc.can.packer import CANPacker
+import numpy as np
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
@@ -101,7 +102,7 @@ class CarController():
     self.steer_rate_limited = new_steer != apply_steer
 
     # SPAS limit angle extremes for safety
-    apply_steer_ang_req = np.clip(actuators.steerAngle, -1*(SteerLimitParams.STEER_ANG_MAX), SteerLimitParams.STEER_ANG_MAX)
+    apply_steer_ang_req = np.clip(actuators.steerAngle, -1*(STEER_ANG_MAX), STEER_ANG_MAX)
     # SPAS limit angle rate for safety
     if abs(self.apply_steer_ang - apply_steer_ang_req) > 0.6:
       if apply_steer_ang_req > self.apply_steer_ang:
