@@ -1,8 +1,8 @@
 from cereal import car
 from common.numpy_fast import clip
 from selfdrive.car import apply_std_steer_torque_limits
-from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, \
-                                             create_scc12, create_mdps12
+from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create_mdps12, \
+                                             create_scc11, create_scc12, create_scc13, create_scc14
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
 from opendbc.can.packer import CANPacker
 
@@ -71,7 +71,9 @@ class CarController():
     self.turning_signal_timer = 0
     self.lkas_button = 1
     self.lkas_button_last = 0
-    self.longcontrol = 0 #TODO: make auto
+    self.longcontrol = 0
+    self.sccEmulation = self.longcontrol and CP.sccBus == -1
+    self.SCC_activated = False
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
               left_line, right_line, left_lane_depart, right_lane_depart):
@@ -158,6 +160,27 @@ class CarController():
     if CS.scc_bus and frame % 2: # send scc12 to car if SCC not on bus 0 and longcontrol enabled
       can_sends.append(create_scc12(self.packer, apply_accel, scc_active, self.scc12_cnt, CS.scc12))
       self.scc12_cnt += 1
+
+    if self.sccEmulation:
+      if not self.SCC_activated:
+        CS.scc11['MainMode_ACC'] = 1
+        CS.scc11['ACC_ObjStatus'] = 1
+        CS.scc11['ObjValid'] = 1
+        CS.scc11['ACC_ObjDist'] = 3
+        CS.scc11['ObjGap'] = 2
+        CS.scc12['ACCMode']= 1
+        CS.scc12['StopReq']= 1
+        CS.scc14['SCCMode'] = 1
+        CS.scc14['JerkUpperLimit'] = 1
+        CS.scc14['JerkLowerLimit'] = 0.5
+        if frame > 100:
+          self.SCC_activated = True
+      if frame % 2:
+        can_sends.append(create_scc12(self.packer, apply_accel, scc_active, self.scc12_cnt, CS.scc12, keep_stock=self.SCC_activated))
+        can_sends.append(create_scc11(self.packer, enabled, CS.scc11, keep_stock=self.SCC_activated))
+        can_sends.append(create_scc14(self.packer, enabled, CS.scc14, keep_stock=self.SCC_activated))
+      if frame % 20:
+        can_sends.append(create_scc13(self.packer, CS.scc13, keep_stock=self.SCC_activated))
 
     if CS.stopped:
       # run only first time when the car stopped

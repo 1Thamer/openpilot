@@ -73,27 +73,27 @@ def create_clu11(packer, bus, clu11, button, speed, cnt):
 
   return packer.make_can_msg("CLU11", bus, values)
 
-def create_scc12(packer, apply_accel, enabled, cnt, scc12):
+def create_scc12(packer, apply_accel, enabled, cnt, scc12, keep_stock=True):
   values = {
-    "CF_VSM_Prefill": scc12["CF_VSM_Prefill"],
-    "CF_VSM_DecCmdAct": scc12["CF_VSM_DecCmdAct"],
-    "CF_VSM_HBACmd": scc12["CF_VSM_HBACmd"],
-    "CF_VSM_Warn": scc12["CF_VSM_Warn"],
-    "CF_VSM_Stat": scc12["CF_VSM_Stat"],
-    "CF_VSM_BeltCmd": scc12["CF_VSM_BeltCmd"],
-    "ACCFailInfo": scc12["ACCFailInfo"],
-    "ACCMode": scc12["ACCMode"],
-    "StopReq": scc12["StopReq"],
-    "CR_VSM_DecCmd": scc12["CR_VSM_DecCmd"],
-    "aReqMax": apply_accel if enabled and scc12["ACCMode"] == 1 else scc12["aReqMax"],
-    "TakeOverReq": scc12["TakeOverReq"],
-    "PreFill": scc12["PreFill"],
-    "aReqMin": apply_accel if enabled and scc12["ACCMode"] == 1 else scc12["aReqMin"],
-    "CF_VSM_ConfMode": scc12["CF_VSM_ConfMode"],
-    "AEB_Failinfo": scc12["AEB_Failinfo"],
-    "AEB_Status": scc12["AEB_Status"],
-    "AEB_CmdAct": scc12["AEB_CmdAct"],
-    "AEB_StopReq": scc12["AEB_StopReq"],
+    "CF_VSM_Prefill": scc12["CF_VSM_Prefill"] if keep_stock else 0,
+    "CF_VSM_DecCmdAct": scc12["CF_VSM_DecCmdAct"] if keep_stock else 0,
+    "CF_VSM_HBACmd": scc12["CF_VSM_HBACmd"] if keep_stock else 0,
+    "CF_VSM_Warn": scc12["CF_VSM_Warn"] if keep_stock else 0,
+    "CF_VSM_Stat": scc12["CF_VSM_Stat"] if keep_stock else 0,
+    "CF_VSM_BeltCmd": scc12["CF_VSM_BeltCmd"] if keep_stock else 0,
+    "ACCFailInfo": scc12["ACCFailInfo"] if keep_stock else 0,
+    "ACCMode": scc12["ACCMode"] if keep_stock else 0,
+    "StopReq": scc12["StopReq"] if keep_stock else 0,
+    "CR_VSM_DecCmd": scc12["CR_VSM_DecCmd"] if keep_stock else 0,
+    "aReqMax": apply_accel if enabled else scc12["aReqMax"] if keep_stock else 0,
+    "TakeOverReq": scc12["TakeOverReq"] if keep_stock else 0,
+    "PreFill": scc12["PreFill"] if keep_stock else 0,
+    "aReqMin": apply_accel if enabled else scc12["aReqMin"] if keep_stock else 0,
+    "CF_VSM_ConfMode": scc12["CF_VSM_ConfMode"] if keep_stock else 0,
+    "AEB_Failinfo": scc12["AEB_Failinfo"] if keep_stock else 0,
+    "AEB_Status": scc12["AEB_Status"] if keep_stock else 0,
+    "AEB_CmdAct": scc12["AEB_CmdAct"] if keep_stock else 0,
+    "AEB_StopReq": scc12["AEB_StopReq"] if keep_stock else 0,
     "CR_VSM_Alive": cnt,
     "CR_VSM_ChkSum": 0,
   }
@@ -123,3 +123,43 @@ def create_mdps12(packer, car_fingerprint, cnt, mdps12):
   values["CF_Mdps_Chksum2"] = checksum
 
   return packer.make_can_msg("MDPS12", 2, values)
+
+def create_scc11(packer, enabled, scc11, keep_stock=True):
+  values = {
+    "MainMode_ACC": enabled,
+    "SCCInfoDisplay": scc11["SCCInfoDisplay"] if keep_stock else 0,
+    "AliveCounterACC": scc11["AliveCounterACC"] if keep_stock else 0,
+    "VSetDis": scc11["VSetDis"] if keep_stock else 0, # km/h velosity
+    "ObjValid": 1 if enabled else 0,
+    "DriverAlertDisplay": scc11["DriverAlertDisplay"] if keep_stock else 0,
+    "TauGapSet": scc11["TauGapSet"] if keep_stock else 0,
+    "Navi_SCC_Curve_Status": scc11["Navi_SCC_Curve_Status"] if keep_stock else 0,
+    "Navi_SCC_Curve_Act": scc11["Navi_SCC_Curve_Act"] if keep_stock else 0,
+    "Navi_SCC_Camera_Act": scc11["Navi_SCC_Camera_Act"] if keep_stock else 0,
+    "Navi_SCC_Camera_Status": scc11["Navi_SCC_Camera_Status"] if keep_stock else 0,
+    "ACC_ObjStatus": 1 if enabled else 0,
+    "ACC_ObjDist": 3 if enabled else 150, # no object in front
+    "ACC_ObjLatPos": scc11["ACC_ObjLatPos"] if keep_stock else 0,
+    "ACC_ObjRelSpd": scc11["ACC_ObjRelSpd"] if keep_stock else 0,
+  }
+  return packer.make_can_msg("SCC11", 0, values)
+
+def create_scc13(packer, scc13, keep_stock=True):
+  values = {
+    "SCCDrvModeRValue" : scc13["SCCDrvModeRValue"] if keep_stock else 0,
+    "SCC_Equip" : scc13["SCC_Equip"] if keep_stock else 0,
+    "AebDrvSetStatus" : scc13["AebDrvSetStatus"] if keep_stock else 0,
+  }
+  return packer.make_can_msg("SCC13", 0, values)
+
+def create_scc14(packer, enabled, scc14, keep_stock=True):
+  values = {
+    "JerkUpperLimit" : scc14["JerkUpperLimit"] if keep_stock else 0,
+    "JerkLowerLimit" : scc14["JerkLowerLimit"] if keep_stock else 0,
+    "SCCMode" : scc14["SCCMode"] if keep_stock else 0,
+    "ColRiskF" : scc14["ColRiskF"] if keep_stock else 0,
+    "ComfortBandUpper" : scc14["ComfortBandUpper"] if keep_stock else 0,
+    "ComfortBandLower" : scc14["ComfortBandLower"] if keep_stock else 0,
+  }
+  return packer.make_can_msg("SCC14", 0, values)
+
