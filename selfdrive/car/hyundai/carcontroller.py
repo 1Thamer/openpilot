@@ -163,16 +163,20 @@ class CarController():
 
     if self.sccEmulation:
       if not self.SCC_activated:
-        scc11['MainMode_ACC'] = 1
-        scc11['ObjValid'] = 1
-        scc11['ACC_ObjStatus'] = 1
-        scc11['ACC_ObjDist'] = 3
-        scc14['ObjGap'] = 2
+        scc11 = {
+          "MainMode_ACC": 1,
+          "ObjValid": 1,
+          "ACC_ObjStatus": 1,
+          "ACC_ObjDist": 1,
+        }
+        scc14 = {
+          "SCCMode": 1,
+          "JerkUpperLimit": 1,
+          "JerkLowerLimit": 0.5,
+          "ObjGap": 2,
+        }
         CS.scc12['ACCMode']= 1
         CS.scc12['StopReq']= 1
-        scc14['SCCMode'] = 1
-        scc14['JerkUpperLimit'] = 1
-        scc14['JerkLowerLimit'] = 0.5
         if frame > 100:
           self.SCC_activated = True
       if frame % 2:
