@@ -163,24 +163,24 @@ class CarController():
 
     if self.sccEmulation:
       if not self.SCC_activated:
-        CS.scc11['MainMode_ACC'] = 1
-        CS.scc11['ACC_ObjStatus'] = 1
-        CS.scc11['ObjValid'] = 1
-        CS.scc11['ACC_ObjDist'] = 3
-        CS.scc11['ObjGap'] = 2
+        scc11['MainMode_ACC'] = 1
+        scc11['ObjValid'] = 1
+        scc11['ACC_ObjStatus'] = 1
+        scc11['ACC_ObjDist'] = 3
+        scc14['ObjGap'] = 2
         CS.scc12['ACCMode']= 1
         CS.scc12['StopReq']= 1
-        CS.scc14['SCCMode'] = 1
-        CS.scc14['JerkUpperLimit'] = 1
-        CS.scc14['JerkLowerLimit'] = 0.5
+        scc14['SCCMode'] = 1
+        scc14['JerkUpperLimit'] = 1
+        scc14['JerkLowerLimit'] = 0.5
         if frame > 100:
           self.SCC_activated = True
       if frame % 2:
-        can_sends.append(create_scc12(self.packer, apply_accel, scc_active, self.scc12_cnt, CS.scc12, keep_stock=self.SCC_activated))
-        can_sends.append(create_scc11(self.packer, enabled, CS.scc11, keep_stock=self.SCC_activated))
-        can_sends.append(create_scc14(self.packer, enabled, CS.scc14, keep_stock=self.SCC_activated))
+        can_sends.append(create_scc12(self.packer, apply_accel, scc_active, self.scc12_cnt, CS.scc12, keep_stock=not self.SCC_activated))
+        can_sends.append(create_scc11(self.packer, enabled, scc11, keep_stock=self.SCC_activated))
+        can_sends.append(create_scc14(self.packer, enabled, scc14, keep_stock=self.SCC_activated))
       if frame % 20:
-        can_sends.append(create_scc13(self.packer, CS.scc13, keep_stock=self.SCC_activated))
+        can_sends.append(create_scc13(self.packer))
 
     if CS.stopped:
       # run only first time when the car stopped
