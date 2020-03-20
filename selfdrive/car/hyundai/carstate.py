@@ -62,6 +62,21 @@ def get_can_parser(CP):
     ("CF_Lca_Stat", "LCA11", 0),
     ("CF_Lca_IndLeft", "LCA11", 0),
     ("CF_Lca_IndRight", "LCA11", 0),
+
+    ("SWI_IGK", "EMS11", 0),
+    ("F_N_ENG", "EMS11", 0),
+    ("ACK_TCS", "EMS11", 0),
+    ("PUC_STAT", "EMS11", 0),
+    ("TQ_COR_STAT", "EMS11", 0),
+    ("RLY_AC", "EMS11", 0),
+    ("F_SUB_TQI", "EMS11", 0),
+    ("TQI_ACOR", "EMS11", 0),
+    ("N", "EMS11", 0),
+    ("TQI", "EMS11", 0),
+    ("TQFR", "EMS11", 0),
+    ("VS", "EMS11", 0),
+    ("RATIO_TQI_BAS_MAX_STND", "EMS11", 0),
+
   ]
 
   checks = [
@@ -75,6 +90,9 @@ def get_can_parser(CP):
   ]
   if not CP.mdpsBus:
     signals += [
+      ("CR_Mdps_StrAng", "MDPS11", 0),
+      ("CF_Mdps_Stat", "MDPS11", 0),
+
       ("CR_Mdps_StrColTq", "MDPS12", 0),
       ("CF_Mdps_Def", "MDPS12", 0),
       ("CF_Mdps_ToiActive", "MDPS12", 0),
@@ -164,6 +182,9 @@ def get_can2_parser(CP):
   checks = []
   if CP.mdpsBus == 1:
     signals += [
+      ("CR_Mdps_StrAng", "MDPS11", 0),
+      ("CF_Mdps_Stat", "MDPS11", 0),
+
       ("CR_Mdps_StrColTq", "MDPS12", 0),
       ("CF_Mdps_Def", "MDPS12", 0),
       ("CF_Mdps_ToiActive", "MDPS12", 0),
@@ -347,6 +368,8 @@ class CarState(CarStateBase):
     self.steer_torque_motor = cp_mdps.vl["MDPS12"]['CR_Mdps_OutTq']
     self.stopped = cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4. if not self.no_radar else False
     self.lead_distance = cp_scc.vl["SCC11"]['ACC_ObjDist'] if not self.no_radar else 0
+    self.mdps11_strang = cp_mdps.vl["MDPS11"]["CR_Mdps_StrAng"]
+    self.mdps11_stat = cp_mdps.vl["MDPS11"]["CF_Mdps_Stat"]
 
     self.user_brake = 0
 
@@ -421,3 +444,4 @@ class CarState(CarStateBase):
     self.clu11 = cp.vl["CLU11"]
     self.scc12 = cp_scc.vl["SCC12"]
     self.mdps12 = cp_mdps.vl["MDPS12"]
+    self.ems11 = cp.vl["EMS11"]
