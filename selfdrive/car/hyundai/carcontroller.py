@@ -57,7 +57,6 @@ class CarController():
     self.apply_steer_last = 0
     self.car_fingerprint = CP.carFingerprint
     self.packer = CANPacker(dbc_name)
-    self.car_fingerprint = car_fingerprint
     self.accel_steady = 0
     self.apply_steer_last = 0
     self.steer_rate_limited = False

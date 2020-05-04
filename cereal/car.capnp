@@ -158,15 +158,15 @@ struct CarState {
   # clutch (manual transmission only)
   clutchPressed @28 :Bool;
 
-  lcaLeft @32 :Bool;
-  lcaRight @33 :Bool;
+  lcaLeft @33 :Bool;
+  lcaRight @34 :Bool;
   
   # which packets this state came from
   canMonoTimes @12: List(UInt64);
 
   # blindspot sensors
-  leftBlindspot @33 :Bool; # Is there something blocking the left lane change
-  rightBlindspot @34 :Bool; # Is there something blocking the right lane change
+  leftBlindspot @35 :Bool; # Is there something blocking the left lane change
+  rightBlindspot @36 :Bool; # Is there something blocking the right lane change
 
   struct WheelSpeeds {
     # optional wheel speeds
@@ -391,14 +391,11 @@ struct CarParams {
   radarTimeStep @45: Float32 = 0.05;  # time delta between radar updates, 20Hz is very standard
   communityFeature @46: Bool;  # true if a community maintained feature is detected
   fingerprintSource @49: FingerprintSource;
-<<<<<<< HEAD
-  mdpsBus @50: Int8;
-  sasBus @51: Int8;
-  sccBus @52: Int8;
-  autoLcaEnabled @53: Int8;
-=======
   networkLocation @50 :NetworkLocation;  # Where Panda/C2 is integrated into the car's CAN network
->>>>>>> 96686d15dd5f43fd6506e83ddc8654f7769f1c09
+  mdpsBus @51: Int8;
+  sasBus @52: Int8;
+  sccBus @53: Int8;
+  autoLcaEnabled @54: Bool;
 
   struct LateralParams {
     torqueBP @0 :List(Int32);
