@@ -151,11 +151,7 @@ class CarController():
       can_sends.append(create_scc12(self.packer, apply_accel, enabled, self.scc12_cnt, CS.scc12))
       self.scc12_cnt += 1
 
-<<<<<<< HEAD
-    if CS.stopped:
-=======
     if CS.out.cruiseState.standstill:
->>>>>>> 7.5
       # run only first time when the car stopped
       if self.last_lead_distance == 0:
         # get the lead distance from the Radar
@@ -173,12 +169,8 @@ class CarController():
     elif self.last_lead_distance != 0:
       self.last_lead_distance = 0  
 
-<<<<<<< HEAD
-    self.lkas11_cnt += 1
-=======
     # 20 Hz LFA MFA message
     if frame % 5 == 0 and self.car_fingerprint in [CAR.SONATA, CAR.PALISADE]:
       can_sends.append(create_lfa_mfa(self.packer, frame, enabled))
->>>>>>> 7.5
 
     return can_sends
