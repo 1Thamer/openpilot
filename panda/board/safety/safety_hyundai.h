@@ -36,10 +36,13 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
   bool valid = addr_safety_check(to_push, hyundai_rx_checks, HYUNDAI_RX_CHECK_LEN,
                                  NULL, NULL, NULL);
 
-  if (valid && GET_BUS(to_push) == 0) {
-    int addr = GET_ADDR(to_push);
+  bool unsafe_allow_gas = unsafe_mode & UNSAFE_DISABLE_DISENGAGE_ON_GAS;
 
-    if (addr == 593) {
+  int addr = GET_ADDR(to_push);
+  int bus = GET_BUS(to_push);
+
+  if (valid) {
+    if (addr == 593 && (bus == 0)) {
       int torque_driver_new = ((GET_BYTES_04(to_push) & 0x7ff) * 0.79) - 808; // scale down new driver torque signal to match previous one
       // update array of samples
       update_sample(&hyundai_torque_driver, torque_driver_new);
@@ -94,10 +97,10 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       hyundai_cruise_engaged_last = cruise_engaged;
     }
 
-    // exit controls on rising edge of gas press
-    if (addr == 608 && OP_SCC_live && bus == 0 ) { // for cars with long control
+    // exit controls on rising edge of gas press for cars with long control
+    if (addr == 608 && OP_SCC_live && bus == 0) {
       bool gas_pressed = (GET_BYTE(to_push, 7) >> 6) != 0;
-      if (gas_pressed && !gas_pressed_prev) {
+      if (!unsafe_allow_gas && gas_pressed && !gas_pressed_prev) {
         controls_allowed = 0;
       }
       gas_pressed_prev = gas_pressed;
@@ -110,8 +113,8 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       hyundai_speed /= 2;
     }
 
-    // exit controls on rising edge of brake press
-    if (addr == 916 && OP_SCC_live && bus == 0) { // for cars with long control
+    // exit controls on rising edge of brake press for cars with long control
+    if (addr == 916 && OP_SCC_live && bus == 0) {
       bool brake_pressed = (GET_BYTE(to_push, 6) >> 7) != 0;
       if (brake_pressed && (!brake_pressed_prev || (hyundai_speed > HYUNDAI_STANDSTILL_THRSLD))) {
         controls_allowed = 0;
@@ -121,7 +124,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
 
     // check if stock camera ECU is on bus 0
     if ((safety_mode_cnt > RELAY_TRNS_TIMEOUT) && (addr == 832)) {
-      relay_malfunction = true;
+      relay_malfunction_set();
     }
     // check if we have a LCAN on Bus1
     if (bus == 1 && (addr == 1296 || addr == 524)) {
