@@ -16,14 +16,16 @@ class CarState(CarStateBase):
     self.mdps_bus = CP.mdpsBus
     self.sas_bus = CP.sasBus
     self.scc_bus = CP.sccBus
+    self.leftBlinker = False
+    self.rightBlinker = False
 
   def update(self, cp, cp2, cp_cam):
     cp_mdps = cp2 if self.mdps_bus else cp
     cp_sas = cp2 if self.sas_bus else cp
     cp_scc = cp2 if self.scc_bus == 1 else cp_cam if self.scc_bus == 2 else cp
-    # update prevs, update must run once per Loop
-    self.prev_left_blinker = ret.leftBlinker
-    self.prev_right_blinker = ret.rightBlinker
+
+    self.prev_left_blinker = self.leftBlinker
+    self.prev_right_blinker = self.rightBlinker
 
     ret = car.CarState.new_message()
 
@@ -43,8 +45,8 @@ class CarState(CarStateBase):
     ret.steeringAngle = cp_sas.vl["SAS11"]['SAS_Angle']
     ret.steeringRate = cp_sas.vl["SAS11"]['SAS_Speed']
     ret.yawRate = cp.vl["ESP12"]['YAW_RATE']
-    ret.leftBlinker = cp.vl["CGW1"]['CF_Gway_TSigLHSw'] != 0
-    ret.rightBlinker = cp.vl["CGW1"]['CF_Gway_TSigRHSw'] != 0
+    ret.leftBlinker = self.leftBlinker = cp.vl["CGW1"]['CF_Gway_TSigLHSw'] != 0
+    ret.rightBlinker = self.rightBlinker = cp.vl["CGW1"]['CF_Gway_TSigRHSw'] != 0
     ret.steeringTorque = cp_mdps.vl["MDPS12"]['CR_Mdps_StrColTq']
     ret.steeringTorqueEps = cp_mdps.vl["MDPS12"]['CR_Mdps_OutTq']
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
@@ -55,9 +57,9 @@ class CarState(CarStateBase):
     ret.cruiseState.available = (cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
                                             cp.vl['EMS16']['CRUISE_LAMP_M']
     ret.cruiseState.standstill = cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4. if not self.no_radar else False
+    self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
     if ret.cruiseState.enabled:
-      self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
-      speed_conv = CV.MPH_TO_MS if is_set_speed_in_mph else CV.KPH_TO_MS
+      speed_conv = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
       ret.cruiseState.speed = cp_scc.vl["SCC11"]['VSetDis'] * speed_conv if not self.no_radar else \
                                          (cp.vl["LVR12"]["CF_Lvr_CruiseSet"] * speed_conv)
     else:
@@ -65,7 +67,7 @@ class CarState(CarStateBase):
 
     ret.brake = 0  # FIXME
     ret.brakePressed = cp.vl["TCS13"]['DriverBraking'] != 0
-    ret.brakeLights = bool(cp.vl["TCS13"]['BrakeLight'] or self.brake_pressed)
+    ret.brakeLights = bool(cp.vl["TCS13"]['BrakeLight'] or ret.brakePressed)
     ret.gas = cp.vl["EMS12"]['PV_AV_CAN'] / 100     #TODO: find pedal signal for EV/HYBRID Cars
     ret.gasPressed = cp.vl["EMS16"]["CF_Ems_AclAct"] != 0
     ret.espDisabled = cp.vl["TCS15"]['ESC_Off_Step'] != 0
@@ -133,7 +135,6 @@ class CarState(CarStateBase):
     self.park_brake = cp.vl["CGW1"]['CF_Gway_ParkBrakeSw']
     self.steer_state = cp_mdps.vl["MDPS12"]['CF_Mdps_ToiActive'] #0 NOT ACTIVE, 1 ACTIVE
     self.steer_warning = cp_mdps.vl["MDPS12"]['CF_Mdps_ToiUnavail']
-    self.brake_error = 0
     self.lead_distance = cp_scc.vl["SCC11"]['ACC_ObjDist'] if not self.no_radar else 0
     self.lkas_button_on = 7 > cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"] != 0
     self.lkas_error = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"] == 7
@@ -170,6 +171,8 @@ class CarState(CarStateBase):
       ("BRAKE_ACT", "EMS12", 0),
       ("PV_AV_CAN", "EMS12", 0),
       ("TPS", "EMS12", 0),
+
+      ("CF_Ems_AclAct", "EMS16", 0),
 
       ("CYL_PRES", "ESP12", 0),
 
