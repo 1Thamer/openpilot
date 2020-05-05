@@ -70,7 +70,7 @@ class CarController():
     self.longcontrol = 0 #TODO: make auto
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
-              left_lane, right_lane, left_lane_depart, right_lane_depart):
+             left_lane, right_lane, left_lane_depart, right_lane_depart):
 
     # *** compute control surfaces ***
 
