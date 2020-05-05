@@ -92,19 +92,19 @@ class CarController():
       self.lkas_button_last = CS.lkas_button_on
 
     # disable if steer angle reach 90 deg, otherwise mdps fault in some models
-    lkas_active = enabled and abs(CS.angle_steers) < 90. and self.lkas_button
+    lkas_active = enabled and abs(CS.out.steeringAngle) < 90. and self.lkas_button
 
     # fix for Genesis hard fault at low speed
-    if CS.v_ego < 16.7 and self.car_fingerprint == CAR.GENESIS and not CS.mdps_bus:
+    if CS.out.vEgo < 16.7 and self.car_fingerprint == CAR.GENESIS and not CS.mdps_bus:
       lkas_active = 0
 
     # Disable steering while turning blinker on and speed below 60 kph
-    if CS.left_blinker_on or CS.right_blinker_on:
+    if CS.out.leftBlinker or CS.out.rightBlinker:
       if self.car_fingerprint not in [CAR.KIA_OPTIMA, CAR.KIA_OPTIMA_H]:
         self.turning_signal_timer = 100  # Disable for 1.0 Seconds after blinker turned off
       elif CS.left_blinker_flash or CS.right_blinker_flash: # Optima has blinker flash signal only
         self.turning_signal_timer = 100
-    if self.turning_signal_timer and CS.v_ego < 16.7:
+    if self.turning_signal_timer and CS.out.vEgo < 16.7:
       lkas_active = 0
     if self.turning_signal_timer:
       self.turning_signal_timer -= 1
@@ -158,7 +158,7 @@ class CarController():
         self.last_lead_distance = CS.lead_distance
         self.resume_cnt = 0
       # when lead car starts moving, create 6 RES msgs
-      elif CS.lead_distance > self.last_lead_distance and (frame - self.last_resume_frame) > 5:
+      elif CS.lead_distance != self.last_lead_distance and (frame - self.last_resume_frame) > 5:
         can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, clu11_speed))
         self.resume_cnt += 1
         # interval after 6 msgs
