@@ -18,6 +18,7 @@ class CarState(CarStateBase):
     self.scc_bus = CP.sccBus
     self.leftBlinker = False
     self.rightBlinker = False
+    self.lkas_button_on = True
 
   def update(self, cp, cp2, cp_cam):
     cp_mdps = cp2 if self.mdps_bus else cp
@@ -26,6 +27,7 @@ class CarState(CarStateBase):
 
     self.prev_left_blinker = self.leftBlinker
     self.prev_right_blinker = self.rightBlinker
+    self.prev_lkas_button_on = self.lkas_button_on
 
     ret = car.CarState.new_message()
 
@@ -137,8 +139,8 @@ class CarState(CarStateBase):
     self.steer_state = cp_mdps.vl["MDPS12"]['CF_Mdps_ToiActive'] #0 NOT ACTIVE, 1 ACTIVE
     self.steer_warning = cp_mdps.vl["MDPS12"]['CF_Mdps_ToiUnavail']
     self.lead_distance = cp_scc.vl["SCC11"]['ACC_ObjDist'] if not self.no_radar else 0
-    self.lkas_button_on = 7 > cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"] != 0
     self.lkas_error = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"] == 7
+    self.lkas_button_on = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"] and not self.lkas_error
     self.left_blinker_flash = cp.vl["CGW1"]['CF_Gway_TurnSigLh']
     self.right_blinker_flash = cp.vl["CGW1"]['CF_Gway_TurnSigRh']
 
@@ -427,3 +429,4 @@ class CarState(CarStateBase):
         ("SCC12", 50),
       ]
     return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)
+

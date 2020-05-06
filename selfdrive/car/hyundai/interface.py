@@ -12,6 +12,7 @@ class CarInterface(CarInterfaceBase):
   def __init__(self, CP, CarController, CarState):
     super().__init__(CP, CarController, CarState)
     self.cp2 = self.CS.get_can2_parser(CP)
+    self.lkas_button_alert = False
 
   @staticmethod
   def compute_gb(accel, speed):
@@ -219,10 +220,15 @@ class CarInterface(CarInterfaceBase):
       ret.rightBlinker = self.CS.right_blinker_flash or self.CS.prev_right_blinker and self.CC.turning_signal_timer
 
     # turning indicator alert logic
-    self.turning_indicator_alert = True if self.CC.turning_signal_timer and ret.vEgo < 16.7 else False
+    if (ret.leftBlinker or ret.rightBlinker or self.CC.turning_signal_timer) and ret.vEgo < 16.7:
+      self.turning_indicator_alert = True 
+    else:
+      self.turning_indicator_alert = False
 
-    # LKAS button alert logic
-    self.lkas_button_alert = True if not self.CC.lkas_button else False
+    # LKAS button alert logic: reverse on/off
+    if not self.CS.lkas_error and self.CS.lkas_button_on != self.CS.prev_lkas_button_on:
+      self.CC.lkas_button_on = True if not self.CS.lkas_button_on else False
+      self.lkas_button_alert = not self.CC.lkas_button_on
 
     # low speed steer alert hysteresis logic (only for cars with steer cut off above 10 m/s)
     if ret.vEgo < (self.CP.minSteerSpeed + 0.2) and self.CP.minSteerSpeed > 10.:
@@ -288,3 +294,4 @@ class CarInterface(CarInterfaceBase):
                                c.hudControl.rightLaneVisible, c.hudControl.leftLaneDepart, c.hudControl.rightLaneDepart)
     self.frame += 1
     return can_sends
+
