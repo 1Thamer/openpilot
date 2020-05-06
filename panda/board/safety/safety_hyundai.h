@@ -10,6 +10,10 @@ const AddrBus HYUNDAI_TX_MSGS[] = {{832, 0}, {832, 1}, {1265, 0}, {1265, 1}, {12
 
 // TODO: do checksum and counter checks
 AddrCheckStruct hyundai_rx_checks[] = {
+  {.addr = {608}, .bus = 0, .expected_timestep = 10000U},
+  {.addr = {897}, .bus = 0, .expected_timestep = 10000U},
+  {.addr = {902}, .bus = 0, .expected_timestep = 10000U},
+  {.addr = {916}, .bus = 0, .expected_timestep = 10000U},
   {.addr = {593}, .bus = 0, .expected_timestep = 20000U},
   {.addr = {1057}, .bus = 0, .expected_timestep = 20000U},
 };
@@ -201,7 +205,7 @@ static int hyundai_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
     }
 
     // reset to 0 if either controls is not allowed or there's a violation
-    if (!controls_allowed) { // a reset worsen the issue of Panda blocking some valid LKAS messages
+    if (violation || !controls_allowed) {
       hyundai_desired_torque_last = 0;
       hyundai_rt_torque_last = 0;
       hyundai_ts_last = ts;
