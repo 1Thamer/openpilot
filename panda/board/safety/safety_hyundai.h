@@ -42,7 +42,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
   int bus = GET_BUS(to_push);
 
   if (valid) {
-    if (addr == 593 && (bus == 0)) {
+    if (addr == 593 && bus == 0) {
       int torque_driver_new = ((GET_BYTES_04(to_push) & 0x7ff) * 0.79) - 808; // scale down new driver torque signal to match previous one
       // update array of samples
       update_sample(&hyundai_torque_driver, torque_driver_new);
@@ -74,7 +74,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       hyundai_cruise_engaged_last = cruise_engaged;
     }
     // cruise control for car without SCC
-    if (addr == 871 && !hyundai_has_scc && OP_SCC_live) {
+    if (addr == 871 && !hyundai_has_scc && OP_SCC_live && bus == 0) {
       // first byte
       int cruise_engaged = (GET_BYTES_04(to_push) & 0xFF);
       if (cruise_engaged && !hyundai_cruise_engaged_last) {
@@ -85,7 +85,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       }
       hyundai_cruise_engaged_last = cruise_engaged;
     }
-    if (addr == 608 && !hyundai_has_scc && !OP_SCC_live) {
+    if (addr == 608 && !hyundai_has_scc && !OP_SCC_live && bus == 0) {
       // bit 25
       int cruise_engaged = (GET_BYTES_04(to_push) >> 25 & 0x1); // ACC main_on signal
       if (cruise_engaged && !hyundai_cruise_engaged_last) {
@@ -98,7 +98,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     }
 
     // exit controls on rising edge of gas press for cars with long control
-    if (addr == 608 && OP_SCC_live) {
+    if (addr == 608 && OP_SCC_live && bus == 0) {
       bool gas_pressed = (GET_BYTE(to_push, 7) >> 6) != 0;
       if (!unsafe_allow_gas && gas_pressed && !gas_pressed_prev) {
         controls_allowed = 0;
@@ -107,14 +107,14 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     }
 
     // sample subaru wheel speed, averaging opposite corners
-    if (addr == 902) {
+    if (addr == 902 && bus == 0) {
       hyundai_speed = GET_BYTES_04(to_push) & 0x3FFF;  // FL
       hyundai_speed += (GET_BYTES_48(to_push) >> 16) & 0x3FFF;  // RL
       hyundai_speed /= 2;
     }
 
     // exit controls on rising edge of brake press for cars with long control
-    if (addr == 916 && OP_SCC_live) {
+    if (addr == 916 && OP_SCC_live && bus == 0) {
       bool brake_pressed = (GET_BYTE(to_push, 6) >> 7) != 0;
       if (brake_pressed && (!brake_pressed_prev || (hyundai_speed > HYUNDAI_STANDSTILL_THRSLD))) {
         controls_allowed = 0;
@@ -123,7 +123,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     }
 
     // check if stock camera ECU is on bus 0
-    if ((safety_mode_cnt > RELAY_TRNS_TIMEOUT) && (bus == 0) && (addr == 832)) {
+    if ((safety_mode_cnt > RELAY_TRNS_TIMEOUT) && bus == 0 && addr == 832) {
       relay_malfunction_set();
     }
     // check if we have a LCAN on Bus1
