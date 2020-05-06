@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-# NOTE: ubuntu_setup.sh doesn't run! only for reading now
-
 sudo apt-get update && sudo apt-get install -y \
     autoconf \
     build-essential \
@@ -71,9 +69,9 @@ git lfs pull
 git submodule init
 git submodule update
 
-# install python 3.7.3 globally (you should move to python3 anyway)
-pyenv install -s 3.7.3
-pyenv global 3.7.3
+# install python 3.8.2 globally (you should move to python3 anyway)
+pyenv install -s 3.8.2
+pyenv global 3.8.2
 pyenv rehash
 
 # **** in python env ****
@@ -88,7 +86,7 @@ pipenv install --system --deploy
 pip install -r tools/requirements.txt
 
 # to make modeld work on PC with nvidia GPU
-pip install tensorflow-gpu==2.0
+pip install tensorflow-gpu==2.1
 
 # for loggerd to work on ubuntu
 # TODO: PC should log somewhere else

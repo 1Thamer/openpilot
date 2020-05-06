@@ -1,7 +1,7 @@
-openpilot-tools
+openpilot tools
 ============
 
-Repo which contains tools to facilitate development and debugging of [openpilot](openpilot.comma.ai).
+tools to facilitate development and debugging of openpilot
 
 ![Imgur](https://i.imgur.com/IdfBgwK.jpg)
 
@@ -24,10 +24,11 @@ Table of Contents
 Requirements
 ============
 
-openpilot-tools and the following setup steps are developed and tested on Ubuntu 16.04, MacOS 10.14.2 and Python 3.7.3.
+openpilot tools and the following setup steps are developed and tested on Ubuntu 16.04, MacOS 10.14.2 and Python 3.7.3.
 
 Setup
 ============
+<!--
 TODO: These instructions maybe outdated, follow ubuntu_setup.sh setup instructions
 
 1. Install native dependencies (Mac and Ubuntu sections listed below)
@@ -130,9 +131,6 @@ TODO: These instructions maybe outdated, follow ubuntu_setup.sh setup instructio
     sudo make install
     ```
 
-
-
-
 2. Clone openpilot if you haven't already
 
     ```bash
@@ -153,11 +151,11 @@ TODO: These instructions maybe outdated, follow ubuntu_setup.sh setup instructio
     make
     ```
 
-3. Clone tools within openpilot, and install dependencies
+3. Install tools dependencies
 
     ```bash
     cd tools
-    pip install -r requirements.txt # Install openpilot-tools dependencies in virtualenv
+    pip install -r requirements.txt # Install tools dependencies in virtualenv
     ```
 
 4. Add openpilot to your `PYTHONPATH`.
@@ -167,15 +165,20 @@ TODO: These instructions maybe outdated, follow ubuntu_setup.sh setup instructio
     echo 'export PYTHONPATH="$PYTHONPATH:<path-to-openpilot>"' >> ~/.bashrc
     source ~/.bashrc
     ```
+-->
+1. Run ubuntu_setup.sh, make sure everything completed correctly
 
-5. Add some folders to root
+2. Compile openpilot by running ```scons``` in the openpilot directory
+
+3. Add some folders to root
     ```bash
     sudo mkdir /data
     sudo mkdir /data/params
     sudo chown $USER /data/params
     ```
 
-6. Try out some tools!
+
+4. Try out some tools!
 
 
 Tool examples
@@ -240,15 +243,17 @@ Use the panda's OBD-II port to connect with your car and a usb cable to connect 
 Also, connect a joystick to your pc.
 
 `joystickd.py` runs a deamon that reads inputs from a joystick and publishes them over zmq.
-`boardd.py` sends the CAN messages from your pc to the panda.
+`boardd` sends the CAN messages from your pc to the panda.
 `debug_controls` is a mocked version of `controlsd.py` and uses input from a joystick to send controls to your car.
+
+Make sure the conditions are met in the panda to allow controls (e.g. cruise control engaged). You can also make a modification to the panda code to always allow controls.
 
 Usage:
 ```
 python carcontrols/joystickd.py
 
 # In another terminal:
-selfdrive/boardd/tests/boardd_old.py # Make sure the safety setting is hardcoded to ALL_OUTPUT
+PARAMS_PATH=persist/params selfdrive/boardd/boardd
 
 # In another terminal:
 python carcontrols/debug_controls.py

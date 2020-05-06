@@ -56,12 +56,13 @@ class ObservationKind():
   PSEUDORANGE = 22
   PSEUDORANGE_RATE = 23
 
-  CAL_DEVICE_FRAME_XY_SPEED = 24  # (x, y) [m/s]
-  CAL_DEVICE_FRAME_YAW_RATE = 25  # [rad/s]
+  ROAD_FRAME_XY_SPEED = 24  # (x, y) [m/s]
+  ROAD_FRAME_YAW_RATE = 25  # [rad/s]
   STEER_ANGLE = 26  # [rad]
   ANGLE_OFFSET_FAST = 27  # [rad]
   STIFFNESS = 28  # [-]
   STEER_RATIO = 29  # [-]
+  ROAD_FRAME_X_SPEED = 30  # (x) [m/s]
 
   names = [
     'Unknown',
@@ -87,8 +88,8 @@ class ObservationKind():
     'GLONASS pseudorange',
     'GLONASS pseudorange rate',
 
-    'Calibrated Device Frame x,y speed',
-    'Calibrated Device Frame yaw rate',
+    'Road Frame x,y speed',
+    'Road Frame yaw rate',
     'Steer Angle',
     'Fast Angle Offset',
     'Stiffness',

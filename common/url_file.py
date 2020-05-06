@@ -1,14 +1,11 @@
 import os
-import sys
 import time
 import tempfile
 import threading
 import urllib.parse
 import pycurl
-import hashlib
 from io import BytesIO
 from tenacity import retry, wait_random_exponential, stop_after_attempt
-from common.file_helpers import mkdirs_exists_ok, atomic_write_in_dir
 
 class URLFile(object):
   _tlocal = threading.local()
@@ -72,7 +69,8 @@ class URLFile(object):
     if response_code == 416: #  Requested Range Not Satisfiable
       return ""
     if response_code != 206 and response_code != 200:
-      raise Exception("Error {}: {}".format(response_code, repr(dats.getvalue())[:500]))
+      raise Exception("Error {} ({}): {}".format(response_code, self._url, repr(dats.getvalue())[:500]))
+
 
     ret = dats.getvalue()
     self._pos += len(ret)

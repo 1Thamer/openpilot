@@ -1719,6 +1719,8 @@ static void parse_autofocus(CameraState *s, uint8_t *d) {
   for (int i = 0; i < NUM_FOCUS; i++) {
     int doff = i*5+5;
     s->confidence[i] = d[doff];
+    // this should just be a 10-bit signed int instead of 11
+    // TODO: write it in a nicer way
     int16_t focus_t = (d[doff+1] << 3) | (d[doff+2] >> 5);
     if (focus_t >= 1024) focus_t = -(2048-focus_t);
     s->focus[i] = focus_t;
@@ -2117,7 +2119,8 @@ void cameras_run(DualCameraState *s) {
 
     int ret = poll(fds, ARRAYSIZE(fds), 1000);
     if (ret <= 0) {
-      LOGE("poll failed (%d)", ret);
+      if (errno == EINTR || errno == EAGAIN) continue;
+      LOGE("poll failed (%d - %d)", ret, errno);
       break;
     }
 

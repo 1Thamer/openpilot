@@ -1,4 +1,3 @@
-import platform
 from collections import namedtuple
 
 import matplotlib
@@ -109,10 +108,6 @@ def draw_lead_on(img, closest_x_m, closest_y_m, calibration, color, sz=10, img_o
   return u, v
 
 
-if platform.system() != 'Darwin':
-  matplotlib.use('QT4Agg')
-
-
 def init_plots(arr, name_to_arr_idx, plot_xlims, plot_ylims, plot_names, plot_colors, plot_styles, bigplots=False):
   color_palette = { "r": (1,0,0),
                     "g": (0,1,0),
@@ -173,8 +168,14 @@ def init_plots(arr, name_to_arr_idx, plot_xlims, plot_ylims, plot_names, plot_co
       fig.canvas.flush_events()
 
     raw_data = renderer.tostring_rgb()
-    #print fig.canvas.get_width_height()
-    plot_surface = pygame.image.frombuffer(raw_data, fig.canvas.get_width_height(), "RGB").convert()
+    x, y = fig.canvas.get_width_height()
+
+    # Handle 2x scaling
+    if len(raw_data) == 4 * x * y * 3:
+      plot_surface = pygame.image.frombuffer(raw_data, (2*x, 2*y), "RGB").convert()
+      plot_surface = pygame.transform.scale(plot_surface, (x, y))
+    else:
+      plot_surface = pygame.image.frombuffer(raw_data, fig.canvas.get_width_height(), "RGB").convert()
     return plot_surface
 
   return draw_plots

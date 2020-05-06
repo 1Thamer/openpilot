@@ -3,21 +3,14 @@ import os
 
 from common.basedir import BASEDIR
 os.environ['BASEDIR'] = BASEDIR
-SCALE = 3
+SCALE = float(os.getenv("SCALE", 1.0))
 
 import argparse
-import zmq
 import pygame
 import numpy as np
 import cv2
 import sys
-import traceback
-from collections import namedtuple
-from cereal import car
-from common.params import Params
-from tools.lib.lazy_property import lazy_property
-from cereal.messaging import sub_sock, recv_one_or_none, recv_one
-from cereal.services import service_list
+import cereal.messaging as messaging
 
 _BB_OFFSET = 0, 0
 _BB_TO_FULL_FRAME = np.asarray([[1., 0., _BB_OFFSET[0]], [0., 1., _BB_OFFSET[1]],
@@ -32,21 +25,18 @@ def pygame_modules_have_loaded():
 
 
 def ui_thread(addr, frame_address):
-  context = zmq.Context.instance()
-
   pygame.init()
   pygame.font.init()
   assert pygame_modules_have_loaded()
 
-  size = (_FULL_FRAME_SIZE[0] * SCALE, _FULL_FRAME_SIZE[1] * SCALE)
+  size = (int(_FULL_FRAME_SIZE[0] * SCALE), int(_FULL_FRAME_SIZE[1] * SCALE))
+  print(size)
   pygame.display.set_caption("comma one debug UI")
   screen = pygame.display.set_mode(size, pygame.DOUBLEBUF)
 
   camera_surface = pygame.surface.Surface((_FULL_FRAME_SIZE[0] * SCALE, _FULL_FRAME_SIZE[1] * SCALE), 0, 24).convert()
 
-  frame = context.socket(zmq.SUB)
-  frame.connect(frame_address or "tcp://%s:%d" % (addr, service_list['frame'].port))
-  frame.setsockopt(zmq.SUBSCRIBE, "")
+  frame = messaging.sub_sock('frame', conflate=True)
 
   img = np.zeros((_FULL_FRAME_SIZE[1], _FULL_FRAME_SIZE[0], 3), dtype='uint8')
   imgff = np.zeros((_FULL_FRAME_SIZE[1], _FULL_FRAME_SIZE[0], 3), dtype=np.uint8)
@@ -56,7 +46,7 @@ def ui_thread(addr, frame_address):
     screen.fill((64, 64, 64))
 
     # ***** frame *****
-    fpkt = recv_one(frame)
+    fpkt = messaging.recv_one(frame)
     yuv_img = fpkt.frame.image
 
     if fpkt.frame.transform:
@@ -76,11 +66,13 @@ def ui_thread(addr, frame_address):
         dst=img,
         flags=cv2.WARP_INVERSE_MAP)
     else:
-      img.fill(0)
+      # actually RGB
+      img = np.frombuffer(yuv_img, dtype=np.uint8).reshape((_FULL_FRAME_SIZE[1], _FULL_FRAME_SIZE[0], 3))
+      img = img[:, :, ::-1] # Convert BGR to RGB
 
     height, width = img.shape[:2]
     img_resized = cv2.resize(
-      img, (SCALE * width, SCALE * height), interpolation=cv2.INTER_CUBIC)
+      img, (int(SCALE * width), int(SCALE * height)), interpolation=cv2.INTER_CUBIC)
     # *** blits ***
     pygame.surfarray.blit_array(camera_surface, img_resized.swapaxes(0, 1))
     screen.blit(camera_surface, (0, 0))
