@@ -48,9 +48,13 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       update_sample(&hyundai_torque_driver, torque_driver_new);
     }
 
+    // check for SCC, Tucson 2017 has SCC address but not the function
+    if (addr == 916 && bus == 0) {
+      hyundai_has_scc = (GET_BYTES_48(to_push) >> 20 & 0x1) == 1;  // TCS13: ACC_EQUIP
+    }
+
     // enter controls on rising edge of ACC, exit controls on ACC off
-    if (addr == 1057 && OP_SCC_live && (bus != 1 || !hyundai_LCAN_on_bus1)) { // for cars with long control
-      hyundai_has_scc = true;
+    if (addr == 1057 && OP_SCC_live && (bus != 1 || !hyundai_LCAN_on_bus1) && hyundai_has_scc) { // for cars with long control
       // 2 bits: 13-14
       int cruise_engaged = (GET_BYTES_04(to_push) >> 13) & 0x3;
       if (cruise_engaged && !hyundai_cruise_engaged_last) {
@@ -61,8 +65,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       }
       hyundai_cruise_engaged_last = cruise_engaged;
     }
-    if (addr == 1056 && !OP_SCC_live && (bus != 1 || !hyundai_LCAN_on_bus1)) { // for cars without long control
-      hyundai_has_scc = true;
+    if (addr == 1056 && !OP_SCC_live && (bus != 1 || !hyundai_LCAN_on_bus1) && hyundai_has_scc) { // for cars without long control
       // 2 bits: 13-14
       int cruise_engaged = GET_BYTES_04(to_push) & 0x1; // ACC main_on signal
       if (cruise_engaged && !hyundai_cruise_engaged_last) {
