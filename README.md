@@ -55,11 +55,8 @@ To add new car or fingerprint, please make Pull Requset or send me the fingerpri
 | Kia       | Sorento 2018<sup>5</sup>           | All               | Stock            | 0mph               | 0mph         |
 | Kia       | Stinger 2018<sup>5</sup>           | SCC + LKAS        | Stock            | 0mph               | 0mph         |
 
-Known issues
-------
-
-
-
+Openpilot information
+======
 [![](https://i.imgur.com/UelUjKAh.png)](#)
 
 Table of Contents
