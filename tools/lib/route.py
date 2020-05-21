@@ -7,7 +7,7 @@ from itertools import chain
 from tools.lib.auth_config import get_token
 from tools.lib.api import CommaApi
 
-SEGMENT_NAME_RE = r'[a-z0-9]{16}[|_][0-9]{4}-[0-9]{2}-[0-9]{2}--[0-9]{2}-[0-9]{2}-[0-9]{2}--[0-9]+'
+SEGMENT_NAME_RE = r'([a-z0-9]{16}[|_])?[0-9]{4}-[0-9]{2}-[0-9]{2}--[0-9]{2}-[0-9]{2}-[0-9]{2}--[0-9]+'
 EXPLORER_FILE_RE = r'^({})--([a-z]+\.[a-z0-9]+)$'.format(SEGMENT_NAME_RE)
 OP_SEGMENT_DIR_RE = r'^({})$'.format(SEGMENT_NAME_RE)
 
@@ -69,11 +69,11 @@ class Route(object):
       op_match = re.match(OP_SEGMENT_DIR_RE, f)
 
       if explorer_match:
-        segment_name, fn = explorer_match.groups()
+        segment_name, fn = explorer_match.group(1, 3)
         if segment_name.replace('_', '|').startswith(self.route_name):
           segment_files[segment_name].append((fullpath, fn))
       elif op_match and os.path.isdir(fullpath):
-        segment_name, = op_match.groups()
+        segment_name = op_match.group(1)
         if segment_name.startswith(self.route_name):
           for seg_f in os.listdir(fullpath):
             segment_files[segment_name].append((os.path.join(fullpath, seg_f), seg_f))
