@@ -31,17 +31,8 @@ os.environ['BASEDIR'] = BASEDIR
 
 ANGLE_SCALE = 5.0
 HOR = os.getenv("HORIZONTAL") is not None
-ui_scale = 80 # (%)
-def ui_scaler(size):
-  if isinstance(size, int):
-    rt = size * ui_scale // 100
-  elif isinstance(size, tuple):
-    rt = tuple(size[j] * ui_scale // 100 if j < 2 else size[j] for j in range(len(size)))
-  elif isinstance(size, list):
-    rt = [size[j] * ui_scale // 100 if j < 2 else size[j] for j in range(len(size))]
-  else:
-   rt = size
-  return rt
+
+
 def ui_thread(addr, frame_address):
   # TODO: Detect car from replay and use that to select carparams
   CP = ToyotaInterface.get_params("TOYOTA PRIUS 2017")
@@ -54,33 +45,26 @@ def ui_thread(addr, frame_address):
   pygame.font.init()
   assert pygame_modules_have_loaded()
 
-  camera_width = ui_scaler(640)
-  camera_hight = ui_scaler(480)
-  plot_width = ui_scaler(384)
-  plot_hight = ui_scaler(960)
-  plot_horiz = ui_scaler(600)
-  cam_width = ui_scaler(300)
-  imgw_width = 160
-  imgw_hight = 320
-  alert_positon1 = ui_scaler((180, 150))
-  alert_positon2 = ui_scaler((180, 190))
   if HOR:
-    size = (camera_width+plot_width+camera_width, plot_hight)
-    write_x = ui_scaler(5)
-    write_y = ui_scaler(680)
+    size = (640+384+640, 960)
+    write_x = 5
+    write_y = 680
   else:
-    size = (camera_width+plot_width, plot_hight+cam_width)
-    write_x = ui_scaler(645)
-    write_y = ui_scaler(970)
+    size = (640+384, 960+300)
+    write_x = 645
+    write_y = 970
+  window_ratio = size[0] / size[1]
+  optimal_size = size
 
   pygame.display.set_caption("openpilot debug UI")
-  screen = pygame.display.set_mode(size, pygame.DOUBLEBUF)
+  screen = pygame.display.set_mode(size, pygame.DOUBLEBUF|pygame.RESIZABLE)
+  fake_screen = screen.copy()
 
   alert1_font = pygame.font.SysFont("arial", 30)
   alert2_font = pygame.font.SysFont("arial", 20)
   info_font = pygame.font.SysFont("arial", 15)
 
-  camera_surface = pygame.surface.Surface((camera_width, camera_hight), 0, 24).convert()
+  camera_surface = pygame.surface.Surface((640, 480), 0, 24).convert()
   cameraw_surface = pygame.surface.Surface(MODEL_INPUT_SIZE, 0, 24).convert()
   cameraw_test_surface = pygame.surface.Surface(MODEL_INPUT_SIZE, 0, 24)
   top_down_surface = pygame.surface.Surface((UP.lidar_x, UP.lidar_y),0,8)
@@ -89,9 +73,9 @@ def ui_thread(addr, frame_address):
   sm = messaging.SubMaster(['carState', 'plan', 'carControl', 'radarState', 'liveCalibration', 'controlsState', 'liveTracks', 'model', 'liveMpc', 'liveParameters', 'pathPlan'], addr=addr)
 
   calibration = None
-  img = np.zeros((camera_hight, camera_width, 3), dtype='uint8')
-  imgff = np.zeros((ui_scaler(FULL_FRAME_SIZE[1]), ui_scaler(FULL_FRAME_SIZE[0]), 3), dtype=np.uint8)
-  imgw = np.zeros((imgw_width, imgw_hight, 3), dtype=np.uint8)  # warped image
+  img = np.zeros((480, 640, 3), dtype='uint8')
+  imgff = np.zeros((FULL_FRAME_SIZE[1], FULL_FRAME_SIZE[0], 3), dtype=np.uint8)
+  imgw = np.zeros((160, 320, 3), dtype=np.uint8)  # warped image
   lid_overlay_blank = get_blank_lid_overlay(UP)
 
   # plots
@@ -130,10 +114,20 @@ def ui_thread(addr, frame_address):
 
   draw_plots = init_plots(plot_arr, name_to_arr_idx, plot_xlims, plot_ylims, plot_names, plot_colors, plot_styles, bigplots=True)
 
-  while 1:
-    list(pygame.event.get())
+  running = True
+  while running:
+    for event in pygame.event.get():
+      if event.type == pygame.QUIT:
+        running = False
+      elif event.type == pygame.VIDEORESIZE:
+        fake_screen = pygame.display.set_mode(event.dict['size'], pygame.DOUBLEBUF|pygame.RESIZABLE)
+        if event.dict['size'][0] / size[0] < event.dict['size'][1] / size[1]:
+          optimal_size = (event.dict['size'][0], int(event.dict['size'][0] / window_ratio))
+        else:
+          optimal_size = (int(event.dict['size'][1] * window_ratio), event.dict['size'][1])
 
     screen.fill((64,64,64))
+    fake_screen.fill((64,64,64))
     lid_overlay = lid_overlay_blank.copy()
     top_down = top_down_surface, lid_overlay
 
@@ -231,8 +225,8 @@ def ui_thread(addr, frame_address):
     # display alerts
     alert_line1 = alert1_font.render(sm['controlsState'].alertText1, True, (255,0,0))
     alert_line2 = alert2_font.render(sm['controlsState'].alertText2, True, (255,0,0))
-    screen.blit(alert_line1, alert_positon1)
-    screen.blit(alert_line2, alert_positon2)
+    screen.blit(alert_line1, (180, 150))
+    screen.blit(alert_line2, (180, 190))
 
     if calibration is not None and img is not None:
       cpw = warp_points(CalP, calibration.model_to_bb)
@@ -241,15 +235,15 @@ def ui_thread(addr, frame_address):
       pygame.draw.circle(screen, BLUE, list(map(int, map(round, vanishing_pointw[0]))), 2)
 
     if HOR:
-      screen.blit(draw_plots(plot_arr), (camera_width+plot_width, 0))
+      screen.blit(draw_plots(plot_arr), (640+384, 0))
     else:
-      screen.blit(draw_plots(plot_arr), (0, plot_horiz))
+      screen.blit(draw_plots(plot_arr), (0, 600))
 
     pygame.surfarray.blit_array(cameraw_surface, imgw.swapaxes(0, 1))
-    screen.blit(cameraw_surface, (imgw_hight, camera_hight))
+    screen.blit(cameraw_surface, (320, 480))
 
     pygame.surfarray.blit_array(*top_down)
-    screen.blit(top_down[0], (camera_width,0))
+    screen.blit(top_down[0], (640,0))
 
     i = 0
     SPACING = 25
@@ -271,6 +265,8 @@ def ui_thread(addr, frame_address):
       if line is not None:
         screen.blit(line, (write_x, write_y + i * SPACING))
 
+    # sclae screen and blit it into fake screen
+    fake_screen.blit(pygame.transform.scale(screen, optimal_size), (0, 0))    
     # this takes time...vsync or something
     pygame.display.flip()
 
