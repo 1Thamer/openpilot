@@ -19,6 +19,7 @@ class CarState(CarStateBase):
     self.leftBlinker = False
     self.rightBlinker = False
     self.lkas_button_on = True
+    self.spas_enabled = CP.spasEnabled
 
   def update(self, cp, cp2, cp_cam):
     cp_mdps = cp2 if self.mdps_bus else cp
@@ -153,6 +154,10 @@ class CarState(CarStateBase):
       self.lkas_button_on = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"]
     self.left_blinker_flash = cp.vl["CGW1"]['CF_Gway_TurnSigLh']
     self.right_blinker_flash = cp.vl["CGW1"]['CF_Gway_TurnSigRh']
+    if self.spas_enabled:
+      self.ems11 = cp.vl["EMS11"]
+      self.mdps11_strang = cp_mdps.vl["MDPS11"]["CR_Mdps_StrAng"]
+      self.mdps11_stat = cp_mdps.vl["MDPS11"]["CF_Mdps_Stat"]
 
     return ret
 
@@ -219,7 +224,7 @@ class CarState(CarStateBase):
       ("CGW4", 5),
       ("WHL_SPD11", 50),
     ]
-    if not CP.mdpsBus:
+    if CP.mdpsBus == 0:
       signals += [
         ("CR_Mdps_StrColTq", "MDPS12", 0),
         ("CF_Mdps_Def", "MDPS12", 0),
@@ -236,7 +241,7 @@ class CarState(CarStateBase):
       checks += [
         ("MDPS12", 50)
       ]
-    if not CP.sasBus:
+    if CP.sasBus == 0:
       signals += [
         ("SAS_Angle", "SAS11", 0),
         ("SAS_Speed", "SAS11", 0),
@@ -249,7 +254,7 @@ class CarState(CarStateBase):
         ("CRUISE_LAMP_M", "EMS16", 0),
         ("CF_Lvr_CruiseSet", "LVR12", 0),
       ]
-    elif not CP.sccBus:
+    elif CP.sccBus == 0:
       signals += [
         ("MainMode_ACC", "SCC11", 0),
         ("VSetDis", "SCC11", 0),
@@ -368,6 +373,14 @@ class CarState(CarStateBase):
       checks += [
         ("MDPS12", 50)
       ]
+      if CP.spasEnabled:
+        signals += [
+          ("CR_Mdps_StrAng", "MDPS11", 0),
+          ("CF_Mdps_Stat", "MDPS11", 0),
+        ]
+        checks += [
+          ("MDPS11", 100),
+        ]
     if CP.sasBus == 1:
       signals += [
         ("SAS_Angle", "SAS11", 0),
