@@ -57,7 +57,7 @@ void TFModel::pwrite(float *buf, int size) {
   int tw = size*sizeof(float);
   while (tw > 0) {
     int err = write(pipein[1], cbuf, tw);
-    //printf("host write %d\n", err);
+    printf("host write %d\n", err);
     assert(err >= 0);
     cbuf += err;
     tw -= err;

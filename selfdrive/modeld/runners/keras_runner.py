@@ -37,7 +37,7 @@ if __name__ == "__main__":
   # limit gram alloc
   gpus = tf.config.experimental.list_physical_devices('GPU')
   if len(gpus) > 0:
-    tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=2048)])
+    tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=1536)])
 
   m = load_model(sys.argv[1])
   print(m, file=sys.stderr)
