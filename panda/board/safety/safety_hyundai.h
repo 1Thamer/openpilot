@@ -63,19 +63,22 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     if (hyundai_forward_bus1 || !hyundai_LCAN_on_bus1) {
       hyundai_LCAN_on_bus1 = true;
       hyundai_forward_bus1 = false;
+      puts("  LCAN on bus1: forwarding enabled"); puts("\n");
     }
   }
   // check if we have a MDPS on Bus1 and LCAN not on the bus
   if (bus == 1 && (addr == 593 || addr == 897) && !hyundai_LCAN_on_bus1) {
-    if (!hyundai_forward_bus1) {
+    if (hyundai_mdps_bus != bus || !hyundai_forward_bus1) {
       hyundai_mdps_bus = bus;
       hyundai_forward_bus1 = true;
+      puts("  MDPS on bus1: forwarding enabled"); puts("\n");
     }
   }
   // check if we have a SCC on Bus1 and LCAN not on the bus
   if (bus == 1 && addr == 1057 && !hyundai_LCAN_on_bus1) {
     if (!hyundai_forward_bus1) {
       hyundai_forward_bus1 = true;
+      puts("  SCC on bus1: forwarding enabled"); puts("\n");
     }
   }
 
@@ -164,7 +167,9 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     // check if stock camera ECU is on bus 0
     if ((safety_mode_cnt > RELAY_TRNS_TIMEOUT) && bus == 0 && addr == 832) {
       relay_malfunction_set();
-    }
+      puts("  LKAS on bus0 or relay malfunction"); puts("\n");
+  } else {
+    puts("  CAN RX invalid: "); puth(addr); puts("\n");
   }
   return valid;
 }
@@ -177,10 +182,12 @@ static int hyundai_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
 
   if (!msg_allowed(addr, bus, HYUNDAI_TX_MSGS, sizeof(HYUNDAI_TX_MSGS)/sizeof(HYUNDAI_TX_MSGS[0]))) {
     tx = 0;
+    puts("  CAN TX not allowed: "); puth(addr); puts(", "); puth(bus); puts("\n");
   }
 
   if (relay_malfunction) {
     tx = 0;
+    puts("  CAN TX not allowed LKAS on bus0"); puts("\n");
   }
 
   // LKA STEER: safety check
@@ -193,18 +200,24 @@ static int hyundai_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
     if (controls_allowed) {
 
       // *** global torque limit check ***
-      violation |= max_limit_check(desired_torque, HYUNDAI_MAX_STEER, -HYUNDAI_MAX_STEER);
+      bool torque_check = 0;
+      violation |= torque_check = max_limit_check(desired_torque, HYUNDAI_MAX_STEER, -HYUNDAI_MAX_STEER);
+      if (torque_check) {puts("  LKAS TX not allowed: torque limit check failed!"); puts("\n");}
 
       // *** torque rate limit check ***
-      violation |= driver_limit_check(desired_torque, desired_torque_last, &torque_driver,
+      bool torque_rate_check = 0;
+      violation |= torque_rate_check = driver_limit_check(desired_torque, desired_torque_last, &torque_driver,
         HYUNDAI_MAX_STEER, HYUNDAI_MAX_RATE_UP, HYUNDAI_MAX_RATE_DOWN,
         HYUNDAI_DRIVER_TORQUE_ALLOWANCE, HYUNDAI_DRIVER_TORQUE_FACTOR);
+      if (torque_rate_check) {puts("  LKAS TX not allowed: torque rate limit check failed!"); puts("\n");}
 
       // used next time
       desired_torque_last = desired_torque;
 
       // *** torque real time rate limit check ***
-      violation |= rt_rate_limit_check(desired_torque, rt_torque_last, HYUNDAI_MAX_RT_DELTA);
+      bool torque_rt_check = 0;
+      violation |= torque_rt_check = rt_rate_limit_check(desired_torque, rt_torque_last, HYUNDAI_MAX_RT_DELTA);
+      if (torque_rt_check) {puts("  LKAS TX not allowed: torque real time rate limit check failed!"); puts("\n");}
 
       // every RT_INTERVAL set the new limits
       uint32_t ts_elapsed = get_ts_elapsed(ts, ts_last);
@@ -217,6 +230,7 @@ static int hyundai_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
     // no torque if controls is not allowed
     if (!controls_allowed && (desired_torque != 0)) {
       violation = 1;
+      puts("  LKAS TX not allowed: controls not allowed!"); puts("\n");
     }
 
     // reset to 0 if either controls is not allowed or there's a violation
@@ -241,10 +255,11 @@ static int hyundai_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
     }
   }
 
-  if (addr == 593) {OP_MDPS_live = 20;}
-  if ((addr == 1265) && (GET_BYTES_04(to_send) & 0x7) == 0) {OP_CLU_live = 20;} // only count non-button msg
-  if (addr == 1057) {OP_SCC_live = 20;}
-
+  if (addr == 593) {if (OP_MDPS_live < 1) {puts("  OP Mdps live: forwarding to LKAS stopped"); puts("\n");} OP_MDPS_live = 20;}
+  if ((addr == 1265) && (GET_BYTES_04(to_send) & 0x7) == 0) {
+    if (OP_CLU_live < 1) {puts("  OP Clu12 live: forwarding to Mdps stopped"); puts("\n");} OP_CLU_live = 20;} // only count non-button msg
+  if (addr == 1057) {if (OP_SCC_live < 1) {puts("  OP SCC live: forwarding to Car stopped"); puts("\n");} OP_SCC_live = 20;}
+  
   // 1 allows the message through
   return tx;
 }
