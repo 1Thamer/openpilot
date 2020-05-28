@@ -168,6 +168,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     if ((safety_mode_cnt > RELAY_TRNS_TIMEOUT) && bus == 0 && addr == 832) {
       relay_malfunction_set();
       puts("  LKAS on bus0 or relay malfunction"); puts("\n");
+    }
   } else {
     puts("  CAN RX invalid: "); puth(addr); puts("\n");
   }
