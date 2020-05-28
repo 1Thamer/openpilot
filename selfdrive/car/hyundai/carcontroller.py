@@ -170,4 +170,6 @@ class CarController():
     if frame % 5 == 0 and self.car_fingerprint in [CAR.SONATA, CAR.PALISADE, CAR.SONATA_H]:
       can_sends.append(create_lfa_mfa(self.packer, frame, enabled))
 
+    print(" LKAS active:{}, Steer req:{:.4f}, steering Angle:{:.0f}°    ".format(lkas_active, apply_steer, CS.out.steeringAngle), end='\r')
+
     return can_sends
