@@ -96,8 +96,10 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       int cruise_engaged = (GET_BYTES_04(to_push) >> 13) & 0x3;
       if (cruise_engaged && !cruise_engaged_prev) {
         controls_allowed = 1;
+        puts("  SCC w/ long control: controls allowed"); puts("\n");
       }
       if (!cruise_engaged) {
+        if (controls_allowed) {puts("  SCC w/ long control: controls not allowed"); puts("\n");}
         controls_allowed = 0;
       }
       cruise_engaged_prev = cruise_engaged;
@@ -108,8 +110,10 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       int cruise_engaged = GET_BYTES_04(to_push) & 0x1; // ACC main_on signal
       if (cruise_engaged && !cruise_engaged_prev) {
         controls_allowed = 1;
+        puts("  SCC w/o long control: controls allowed"); puts("\n");
       }
       if (!cruise_engaged) {
+        if (controls_allowed) {puts("  SCC w/o long control: controls not allowed"); puts("\n");}
         controls_allowed = 0;
       }
       cruise_engaged_prev = cruise_engaged;
@@ -120,8 +124,10 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       int cruise_engaged = (GET_BYTES_04(to_push) & 0xFF);
       if (cruise_engaged && !cruise_engaged_prev) {
         controls_allowed = 1;
+        puts("  non-SCC w/ long control: controls allowed"); puts("\n");
       }
       if (!cruise_engaged) {
+        if (controls_allowed) {puts("  non-SCC w/ long control: controls not allowed"); puts("\n");}
         controls_allowed = 0;
       }
       cruise_engaged_prev = cruise_engaged;
@@ -131,8 +137,10 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       int cruise_engaged = (GET_BYTES_04(to_push) >> 25 & 0x1); // ACC main_on signal
       if (cruise_engaged && !cruise_engaged_prev) {
         controls_allowed = 1;
+        puts("  non-SCC w/o long control: controls allowed"); puts("\n");
       }
       if (!cruise_engaged) {
+        if (controls_allowed) {puts("  non-SCC w/o long control: controls not allowed"); puts("\n");}
         controls_allowed = 0;
       }
       cruise_engaged_prev = cruise_engaged;
